@@ -7,8 +7,13 @@ verify_ssl = true
 python_version = "3.8"
 
 [packages]
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
 
 [dev-packages]
 
 [scripts]
 flake8 = "flake8 . --count --statistics --show-source"
+prod = "uvicorn daemon:app"
+dev = "uvicorn daemon:app --reload"
