@@ -1,20 +1,27 @@
-from typing import Optional, get_origin, Union
+from typing import get_origin, Union, Optional
 
-from fastapi import FastAPI, Header, HTTPException, status
+import uvicorn
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.params import Depends
-from pydantic.decorator import ValidatedFunction
+from pydantic import decorator
 from pydantic.fields import ModelField
+from starlette import status
+
+from config import API_TOKEN, HOST, PORT, DEBUG
 
 app = FastAPI()
 
+if not API_TOKEN:
+    print("\033[33mWARNING: Authorization is disabled!\033[0m")
+
 
 def check_authorization(authorization: Optional[str] = Header(None)):
-    if authorization != "ZVLx2iZ4wbL6GEy9TAca39p3AOlDvVw0HJW5JvE8vJH1q7jXUrULFbHC":
+    if API_TOKEN and authorization != API_TOKEN:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid Authorization Header")
 
 
 def create_model_from_function(func):
-    model = ValidatedFunction(func).model
+    model = decorator.ValidatedFunction(func).model
     model.__fields__ = {k: v for k, v in model.__fields__.items() if k in func.__code__.co_varnames}
     for k, v in func.__annotations__.items():
         if get_origin(v) is Union and type(None) in v.__args__:
@@ -61,3 +68,7 @@ def daemon_endpoints():
             }
         ],
     }
+
+
+if __name__ == "__main__":
+    uvicorn.run("daemon:app", host=HOST, port=PORT, reload=DEBUG)
