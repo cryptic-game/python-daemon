@@ -13,7 +13,8 @@ pydantic = "*"
 starlette = "*"
 
 [dev-packages]
+flake8 = "*"
 
 [scripts]
-flake8 = "flake8 . --count --statistics --show-source"
+flake8 = "flake8 daemon --count --statistics --show-source"
 daemon = "python daemon/daemon.py"
