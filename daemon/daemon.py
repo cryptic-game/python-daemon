@@ -1,23 +1,18 @@
 from typing import get_origin, Union, Optional
 
 import uvicorn
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI
 from fastapi.params import Depends
 from pydantic import decorator
 from pydantic.fields import ModelField
-from starlette import status
 
+from authorization import authorized
 from config import API_TOKEN, HOST, PORT, DEBUG
 
 app = FastAPI()
 
 if not API_TOKEN:
     print("\033[33mWARNING: Authorization is disabled!\033[0m")
-
-
-def check_authorization(authorization: Optional[str] = Header(None)):
-    if API_TOKEN and authorization != API_TOKEN:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid Authorization Header")
 
 
 def create_model_from_function(func):
@@ -33,10 +28,11 @@ def create_model_from_function(func):
 
 def endpoint(path: str):
     def deco(func):
+        @app.post(path, dependencies=[Depends(authorized)])
         async def inner(params: create_model_from_function(func)):
             return {"info": {"error": False}, "data": await func(**params.dict())}
 
-        return app.post(path, dependencies=[Depends(check_authorization)])(inner)
+        return inner
 
     return deco
 
@@ -46,7 +42,7 @@ async def device_info(user_id: str, foo: str, bar: int, test: Optional[str]):
     return {"user_id": user_id, "foo": foo, "bar": bar + 2, "test": test}
 
 
-@app.get("/daemon/endpoints", dependencies=[Depends(check_authorization)])
+@app.get("/daemon/endpoints", dependencies=[Depends(authorized)])
 def daemon_endpoints():
     return {
         "info": {"error": False},
