@@ -1,45 +1,18 @@
-from typing import get_origin, Union, Optional
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.params import Depends
-from pydantic import decorator
-from pydantic.fields import ModelField
 
 from authorization import authorized
 from config import API_TOKEN, HOST, PORT, DEBUG
+from endpoints import ENDPOINT_COLLECTIONS
 
 app = FastAPI()
 
 if not API_TOKEN:
     print("\033[33mWARNING: Authorization is disabled!\033[0m")
 
-
-def create_model_from_function(func):
-    model = decorator.ValidatedFunction(func).model
-    model.__fields__ = {k: v for k, v in model.__fields__.items() if k in func.__code__.co_varnames}
-    for k, v in func.__annotations__.items():
-        if get_origin(v) is Union and type(None) in v.__args__:
-            field: ModelField = model.__fields__[k]
-            field.required = False
-            field.default = None
-    return model
-
-
-def endpoint(path: str):
-    def deco(func):
-        @app.post(path, dependencies=[Depends(authorized)])
-        async def inner(params: create_model_from_function(func)):
-            return {"info": {"error": False}, "data": await func(**params.dict())}
-
-        return inner
-
-    return deco
-
-
-@endpoint("/device/info")
-async def device_info(user_id: str, foo: str, bar: int, test: Optional[str]):
-    return {"user_id": user_id, "foo": foo, "bar": bar + 2, "test": test}
+for collection in ENDPOINT_COLLECTIONS:
+    collection.register(app)
 
 
 @app.get("/daemon/endpoints", dependencies=[Depends(authorized)])
