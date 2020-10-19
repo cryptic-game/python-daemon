@@ -9,7 +9,11 @@ from endpoints import ENDPOINT_COLLECTIONS
 app = FastAPI()
 
 if not API_TOKEN:
-    print("\033[33mWARNING: Authorization is disabled!\033[0m")
+    if DEBUG:
+        print("\033[33mWARNING: No API token specified, endpoints can be accessed without authentication!\033[0m")
+    else:
+        print("\033[31m\033[1mERROR: No API token specified!\033[0m")
+        exit(1)
 
 endpoints = [collection.register(app) for collection in ENDPOINT_COLLECTIONS]
 
