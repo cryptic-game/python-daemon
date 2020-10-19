@@ -1,12 +1,14 @@
 import re
+from traceback import print_exc
 from types import FunctionType, MethodType
 from typing import get_origin, Union, Dict
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status
 from pydantic import decorator, BaseModel
 from pydantic.fields import ModelField
 
 from authorization import authorized
+from exceptions import EndpointException
 
 
 def _create_model_from_function(func: Union[FunctionType, MethodType]) -> BaseModel:
@@ -68,7 +70,14 @@ class Endpoint:
 
         @app.post(self.path, dependencies=[Depends(authorized)])
         def inner(params: model):
-            return self._func(**params.dict())
+            try:
+                return self._func(**params.dict())
+            except Exception as e:
+                if isinstance(e, EndpointException):
+                    return e.make_response()
+
+                print_exc()  # todo: add sentry
+                return EndpointException(status.HTTP_500_INTERNAL_SERVER_ERROR, "internal server error").make_response()
 
         return self.describe()
 

@@ -2,7 +2,6 @@ from typing import Optional
 
 from endpoint_collection import EndpointCollection
 
-
 device_collection = EndpointCollection("device", "some device endpoints")
 
 
