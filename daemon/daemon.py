@@ -4,6 +4,7 @@ from fastapi.params import Depends
 
 from authorization import authorized
 from config import API_TOKEN, HOST, PORT, DEBUG
+from database import db
 from endpoints import ENDPOINT_COLLECTIONS
 
 app = FastAPI()
@@ -24,4 +25,5 @@ def daemon_endpoints():
 
 
 if __name__ == "__main__":
+    db.Base.metadata.create_all(db.engine)  # todo: remove this
     uvicorn.run("daemon:app", host=HOST, port=PORT, reload=DEBUG)

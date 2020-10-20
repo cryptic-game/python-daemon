@@ -1,13 +1,14 @@
 import re
 from traceback import print_exc
 from types import FunctionType, MethodType
-from typing import get_origin, Union, Dict
+from typing import get_origin, Union, Dict, Optional
 
 from fastapi import FastAPI, Depends, status
 from pydantic import decorator, BaseModel
 from pydantic.fields import ModelField
 
 from authorization import authorized
+from database import db
 from exceptions import EndpointException
 
 
@@ -78,6 +79,8 @@ class Endpoint:
 
                 print_exc()  # todo: add sentry
                 return EndpointException(status.HTTP_500_INTERNAL_SERVER_ERROR, "internal server error").make_response()
+            finally:
+                db.close()
 
         return self.describe()
 
@@ -95,18 +98,20 @@ class EndpointCollection:
     def path(self) -> str:
         return f"/{self._name}"
 
-    def endpoint(self, name: str):
-        if not re.match(r"^[a-zA-Z0-9\-_]+$", name):
-            raise ValueError("invalid endpoint name")
-
+    def endpoint(self, name: Union[Optional[str], FunctionType] = None):
         def deco(func):
-            if name in self._endpoints:
+            _name = name if name and isinstance(name, str) else func.__name__
+
+            if not re.match(r"^[a-zA-Z0-9\-_]+$", _name):
+                raise ValueError("invalid endpoint name")
+
+            if _name in self._endpoints:
                 raise ValueError("endpoint already exists")
 
-            self._endpoints[name] = Endpoint(self, name, func)
+            self._endpoints[_name] = Endpoint(self, _name, func)
             return func
 
-        return deco
+        return deco(name) if isinstance(name, FunctionType) else deco
 
     def register(self, app: FastAPI) -> dict:
         return {

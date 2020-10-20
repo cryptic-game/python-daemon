@@ -11,6 +11,8 @@ fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
 starlette = "*"
+sqlalchemy = "*"
+psycopg2 = "*"
 
 [dev-packages]
 flake8 = "*"
