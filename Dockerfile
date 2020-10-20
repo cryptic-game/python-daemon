@@ -9,6 +9,7 @@ RUN pip install pipenv==2020.8.13
 COPY Pipfile /build/
 COPY Pipfile.lock /build/
 
+ARG PIPENV_NOSPIN=true
 ARG PIPENV_VENV_IN_PROJECT=true
 RUN pipenv install --deploy --ignore-pipfile
 
