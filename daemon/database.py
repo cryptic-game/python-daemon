@@ -7,11 +7,17 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, Session, Query
 
-from config import SQL_SERVER_LOCATION, SQL_SERVER_DATABASE, SQL_SERVER_USERNAME, SQL_SERVER_PASSWORD
+from config import (
+    SQL_SERVER_LOCATION,
+    SQL_SERVER_DATABASE,
+    SQL_SERVER_USERNAME,
+    SQL_SERVER_PASSWORD,
+    SQL_SHOW_STATEMENTS,
+)
 
 
 class DB:
-    def __init__(self, location: str, database: str, username: str, password: str):
+    def __init__(self, location: str, database: str, username: str, password: str, echo: bool):
         protocol, location = location.split("://")
         self.engine: Engine = create_engine(
             f"{protocol}://{username}:{password}@{location}/{database}",
@@ -19,6 +25,7 @@ class DB:
             pool_recycle=300,
             pool_size=10,
             max_overflow=20,
+            echo=echo,
         )
 
         self._SessionFactory: sessionmaker = sessionmaker(bind=self.engine)
@@ -52,4 +59,5 @@ db = DB(
     database=SQL_SERVER_DATABASE,
     username=SQL_SERVER_USERNAME,
     password=SQL_SERVER_PASSWORD,
+    echo=SQL_SHOW_STATEMENTS,
 )
