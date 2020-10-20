@@ -5,7 +5,7 @@ on:
     # Publish `v1.2.3` tags as releases.
     tags:
       - v*
-    branches: [ master ]
+    branches: [ master, docker ]
     paths-ignore: [ '**.md' ]
   workflow_dispatch:
 
