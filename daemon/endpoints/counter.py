@@ -1,6 +1,6 @@
 from typing import Optional
 
-from starlette import status
+from fastapi import status
 
 from database import db
 from endpoint_collection import EndpointCollection
@@ -8,6 +8,17 @@ from exceptions import EndpointException
 from models.counter import Counter
 
 counter_collection = EndpointCollection("counter", "test endpoints")
+
+
+@counter_collection.endpoint
+def exception():
+    """
+    Raises an exception
+
+    :return: nothing
+    """
+
+    return 1 / 0
 
 
 @counter_collection.endpoint

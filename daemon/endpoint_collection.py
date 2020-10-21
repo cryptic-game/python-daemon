@@ -1,9 +1,8 @@
 import re
-from traceback import print_exc
 from types import FunctionType, MethodType
 from typing import get_origin, Union, Dict, Optional
 
-from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends
 from pydantic import decorator, BaseModel
 from pydantic.fields import ModelField
 
@@ -11,8 +10,10 @@ from authorization import authorized
 from database import db
 from exceptions import EndpointException
 
+Function = Union[FunctionType, MethodType]
 
-def _create_model_from_function(func: Union[FunctionType, MethodType]) -> BaseModel:
+
+def _create_model_from_function(func: Function) -> BaseModel:
     model = decorator.ValidatedFunction(func).model
     model.__fields__ = {k: v for k, v in model.__fields__.items() if k in func.__code__.co_varnames}
     for k, v in func.__annotations__.items():
@@ -20,14 +21,15 @@ def _create_model_from_function(func: Union[FunctionType, MethodType]) -> BaseMo
             field: ModelField = model.__fields__[k]
             field.required = False
             field.default = None
+    model.__fields__["user_id"] = decorator.ValidatedFunction(lambda user_id: None).model.__fields__["user_id"]
     return model
 
 
 class Endpoint:
-    def __init__(self, collection: "EndpointCollection", name: str, func: FunctionType):
+    def __init__(self, collection: "EndpointCollection", name: str, func: Function):
         self._collection: EndpointCollection = collection
         self._name: str = name
-        self._func: FunctionType = func
+        self._func: Function = func
         self._model: BaseModel = _create_model_from_function(self._func)
 
     @property
@@ -72,13 +74,12 @@ class Endpoint:
         @app.post(self.path, dependencies=[Depends(authorized)])
         def inner(params: model):
             try:
-                return self._func(**params.dict())
-            except Exception as e:
-                if isinstance(e, EndpointException):
-                    return e.make_response()
-
-                print_exc()  # todo: add sentry
-                return EndpointException(status.HTTP_500_INTERNAL_SERVER_ERROR, "internal server error").make_response()
+                kwargs = params.dict()
+                if "user_id" not in self._func.__code__.co_varnames:
+                    kwargs.pop("user_id")
+                return self._func(**kwargs)
+            except EndpointException as e:
+                return e.make_response()
             finally:
                 db.close()
 
@@ -98,7 +99,7 @@ class EndpointCollection:
     def path(self) -> str:
         return f"/{self._name}"
 
-    def endpoint(self, name: Union[Optional[str], FunctionType] = None):
+    def endpoint(self, name: Union[Optional[str], Function] = None):
         def deco(func):
             _name = name if name and isinstance(name, str) else func.__name__
 
