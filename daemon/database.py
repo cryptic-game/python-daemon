@@ -19,6 +19,8 @@ T = TypeVar("T")
 
 
 class DB:
+    """Database connection"""
+
     def __init__(self, location: str, database: str, username: str, password: str, echo: bool):
         protocol, location = location.split("://")
         self.engine: Engine = create_engine(
@@ -57,23 +59,23 @@ class DB:
         return obj
 
     def query(self, *entities, **kwargs) -> Query:
-        """shortcut for db.session.query()"""
+        """Shortcut for db.session.query()"""
 
         return self.session.query(*entities, **kwargs)
 
     def commit(self):
-        """shortcut for db.session.commit()"""
+        """Shortcut for db.session.commit()"""
 
         self.session.commit()
 
     def close(self):
-        """close the current session"""
+        """Close the current session"""
 
         self._Session.remove()
 
     @property
     def session(self) -> Session:
-        """get the session object for the current thread"""
+        """Get the session object for the current thread"""
 
         return self._Session()
 

@@ -33,6 +33,8 @@ def _create_model_from_function(func: Function) -> BaseModel:
 
 
 class Endpoint:
+    """Daemon endpoint"""
+
     def __init__(self, collection: "EndpointCollection", name: str, func: Function):
         self._collection: EndpointCollection = collection
         self._name: str = name
@@ -41,7 +43,7 @@ class Endpoint:
 
     @property
     def path(self) -> str:
-        """path of this endpoint"""
+        """Path of this endpoint"""
 
         return f"{self._collection.path}/{self._name}"
 
@@ -119,6 +121,8 @@ class Endpoint:
 
 
 class EndpointCollection:
+    """Collection of daemon endpoints"""
+
     def __init__(self, name: str, description: str):
         if not re.match(r"^[a-zA-Z0-9\-_]+(/[a-zA-Z0-9\-_]+)*$", name):
             raise ValueError("empty endpoint collection name")
@@ -129,7 +133,7 @@ class EndpointCollection:
 
     @property
     def path(self) -> str:
-        """path of this endpoint collection"""
+        """Path of this endpoint collection"""
 
         return f"/{self._name}"
 
