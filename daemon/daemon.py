@@ -20,37 +20,69 @@ if not API_TOKEN:
         print("\033[31m\033[1mERROR: No API token specified!\033[0m")
         sys.exit(1)
 
+# register endpoint collections and prepare response for /daemon/endpoints endpoint
 endpoints = [collection.register(app) for collection in ENDPOINT_COLLECTIONS]
 
 
 @app.get("/daemon/endpoints", dependencies=[Depends(authorized)])
 def daemon_endpoints():
+    """
+    Daemon info endpoint for the server
+
+    :return: a dict containing information about all endpoints and endpoint collections
+    """
+
     return endpoints
 
 
 def make_exception(status_code: int, **kwargs) -> JSONResponse:
+    """
+    Create a JSONResponse object containing an error message
+    as specified in the protocol
+
+    :param status_code: the http status code
+    :param kwargs: any additional parameters
+    :return: the JSONResponse object
+    """
+
     detail = HTTPException(status_code).detail
     return JSONResponse({**kwargs, "error": f"{status_code} {detail}"}, status_code)
 
 
 @app.exception_handler(HTTPException)
 def handle_http_exception(_, exception: HTTPException):
+    """
+    Handle http exceptions
+    """
+
     return make_exception(exception.status_code)
 
 
 @app.exception_handler(RequestValidationError)
 def handle_unprocessable_entity(_, exception: RequestValidationError):
+    """
+    Handle invalid request parameters
+    """
+
     return make_exception(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exception.errors())
 
 
 @app.exception_handler(Exception)
 def handle_internal_server_error(*_):
+    """
+    Handle any uncaught exception and return an Internal Server Error
+    """
+
     # todo: add sentry
     return make_exception(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @app.get("/{_:path}")
 def handle_not_found():
+    """
+    Handle Not Found exceptions
+    """
+
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 

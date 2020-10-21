@@ -14,6 +14,13 @@ Function = Union[FunctionType, MethodType]
 
 
 def _create_model_from_function(func: Function) -> BaseModel:
+    """
+    Create a pydantic model from a function
+
+    :param func: the function
+    :return: the pydantic model
+    """
+
     model = decorator.ValidatedFunction(func).model
     model.__fields__ = {k: v for k, v in model.__fields__.items() if k in func.__code__.co_varnames}
     for k, v in func.__annotations__.items():
@@ -37,6 +44,13 @@ class Endpoint:
         return f"{self._collection.path}/{self._name}"
 
     def describe(self) -> dict:
+        """
+        Describe the endpoint according to the protocol
+
+        :return: dict containing information about this endpoint
+        """
+
+        # parse docstring of the function
         parameter_descriptions: Dict[str, str] = {}
         endpoint_description: str = ""
         reached_metadata = False
@@ -49,10 +63,12 @@ class Endpoint:
             elif not (reached_metadata := reached_metadata or line.startswith(":")):
                 endpoint_description += line + "\n"
 
+        # endpoint description must not be empty
         endpoint_description = endpoint_description.strip()
         if not endpoint_description:
             raise RuntimeError(f"Description for endpoint '{self.path}' could not be found.")
 
+        # collect parameters from pydantic model and use descriptions from docstring
         parameters = []
         for name, field in self._model.__fields__.items():
             if name == "user_id":
@@ -69,6 +85,13 @@ class Endpoint:
         }
 
     def register(self, app: FastAPI) -> dict:
+        """
+        Register this endpoint in the FastAPI app
+
+        :param app: the FastAPI app
+        :return: the endpoint description for the /daemon/endpoints endpoint
+        """
+
         model = self._model
 
         @app.post(self.path, dependencies=[Depends(authorized)])
@@ -100,7 +123,14 @@ class EndpointCollection:
         return f"/{self._name}"
 
     def endpoint(self, name: Union[Optional[str], Function] = None):
+        """
+        Register a new endpoint in this collection
+
+        :param name: name of the endpoint
+        """
+
         def deco(func):
+            # use the function name if no other name is provided
             _name = name if name and isinstance(name, str) else func.__name__
 
             if not re.match(r"^[a-zA-Z0-9\-_]+$", _name):
@@ -115,6 +145,13 @@ class EndpointCollection:
         return deco(name) if isinstance(name, FunctionType) else deco
 
     def register(self, app: FastAPI) -> dict:
+        """
+        Register this endpoint collection in the FastAPI app
+
+        :param app: the FastAPI app
+        :return: the endpoint collection description for the /daemon/endpoints endpoint
+        """
+
         return {
             "id": self._name,
             "description": self._description,

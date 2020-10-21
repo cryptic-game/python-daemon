@@ -12,13 +12,26 @@ class HTTPAuthorizationToken(SecurityBase):
         self.token = token
 
     async def __call__(self, request: Request) -> bool:
+        """
+        Check authorization token of a request
+
+        :param request: the request to check
+        :return: whether the token is valid
+        """
+
+        # accept any request if no token is specified
         if not self.token:
             return True
 
+        # otherwise compare token with authorization header
         authorization: str = request.headers.get("Authorization")
         return authorization and authorization.strip("Bearer ") == self.token
 
 
 def authorized(is_authorized: HTTPAuthorizationToken = Depends(HTTPAuthorizationToken(API_TOKEN))):
+    """
+    Endpoint dependency to check the authorization token
+    """
+
     if not is_authorized:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)

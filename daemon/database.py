@@ -1,4 +1,4 @@
-from typing import T
+from typing import TypeVar
 
 from sqlalchemy import create_engine
 
@@ -14,6 +14,8 @@ from config import (
     SQL_SERVER_PASSWORD,
     SQL_SHOW_STATEMENTS,
 )
+
+T = TypeVar("T")
 
 
 class DB:
