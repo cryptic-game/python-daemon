@@ -1,3 +1,5 @@
+import sys
+
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
 from fastapi.exceptions import RequestValidationError
@@ -16,7 +18,7 @@ if not API_TOKEN:
         print("\033[33mWARNING: No API token specified, endpoints can be accessed without authentication!\033[0m")
     else:
         print("\033[31m\033[1mERROR: No API token specified!\033[0m")
-        exit(1)
+        sys.exit(1)
 
 endpoints = [collection.register(app) for collection in ENDPOINT_COLLECTIONS]
 
@@ -42,7 +44,7 @@ def handle_unprocessable_entity(_, exception: RequestValidationError):
 
 
 @app.exception_handler(Exception)
-def handle_http_exception(*_):
+def handle_internal_server_error(*_):
     # todo: add sentry
     return make_exception(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
