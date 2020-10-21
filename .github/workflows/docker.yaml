@@ -55,6 +55,8 @@ jobs:
           platforms: ${{ env.DOCKER_PLATFORMS }}
           file: Dockerfile
           context: .
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -70,6 +72,8 @@ jobs:
           platforms: ${{ env.DOCKER_PLATFORMS }}
           file: Dockerfile
           context: .
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Clear
         if: always()
