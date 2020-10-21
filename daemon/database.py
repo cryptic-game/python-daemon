@@ -19,6 +19,8 @@ T = TypeVar("T")
 
 
 class DB:
+    """Database connection"""
+
     def __init__(self, location: str, database: str, username: str, password: str, echo: bool):
         protocol, location = location.split("://")
         self.engine: Engine = create_engine(

@@ -2,6 +2,8 @@ from fastapi.responses import JSONResponse
 
 
 class EndpointException(Exception):
+    """Base class for all endpoint exceptions"""
+
     def __init__(self, status_code: int, error: str, **kwargs):
         super().__init__()
 

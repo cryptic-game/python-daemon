@@ -6,6 +6,8 @@ from database import db
 
 
 class Counter(db.Base):
+    """Counter table"""
+
     __tablename__ = "counter"
 
     user_id: Union[Column, str] = Column(String, primary_key=True, unique=True)

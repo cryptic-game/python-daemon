@@ -6,6 +6,8 @@ from config import API_TOKEN
 
 
 class HTTPAuthorizationToken(SecurityBase):
+    """Dependency class for http authorization"""
+
     def __init__(self, token: str):
         self.model = HTTPBearer()
         self.scheme_name = self.__class__.__name__
