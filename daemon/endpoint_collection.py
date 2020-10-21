@@ -41,7 +41,7 @@ class Endpoint:
 
     @property
     def path(self) -> str:
-        """path of this endpoint"""
+        """Path of this endpoint"""
 
         return f"{self._collection.path}/{self._name}"
 
@@ -129,7 +129,7 @@ class EndpointCollection:
 
     @property
     def path(self) -> str:
-        """path of this endpoint collection"""
+        """Path of this endpoint collection"""
 
         return f"/{self._name}"
 
