@@ -41,6 +41,8 @@ class Endpoint:
 
     @property
     def path(self) -> str:
+        """path of this endpoint"""
+
         return f"{self._collection.path}/{self._name}"
 
     def describe(self) -> dict:
@@ -96,6 +98,13 @@ class Endpoint:
 
         @app.post(self.path, dependencies=[Depends(authorized)])
         def inner(params: model):
+            """
+            Wrapper function of all daemon endpoints
+
+            :param params: a pydantic model containing the parameters
+            :return: the response of the endpoint
+            """
+
             try:
                 kwargs = params.dict()
                 if "user_id" not in self._func.__code__.co_varnames:
@@ -120,6 +129,8 @@ class EndpointCollection:
 
     @property
     def path(self) -> str:
+        """path of this endpoint collection"""
+
         return f"/{self._name}"
 
     def endpoint(self, name: Union[Optional[str], Function] = None):
@@ -130,6 +141,13 @@ class EndpointCollection:
         """
 
         def deco(func):
+            """
+            Decorator for endpoint registration
+
+            :param func: endpoint function
+            :return: the same endpoint function
+            """
+
             # use the function name if no other name is provided
             _name = name if name and isinstance(name, str) else func.__name__
 

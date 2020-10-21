@@ -29,9 +29,7 @@ class HTTPAuthorizationToken(SecurityBase):
 
 
 def authorized(is_authorized: HTTPAuthorizationToken = Depends(HTTPAuthorizationToken(API_TOKEN))):
-    """
-    Endpoint dependency to check the authorization token
-    """
+    """Endpoint dependency to check the authorization token"""
 
     if not is_authorized:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)

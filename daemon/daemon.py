@@ -51,27 +51,21 @@ def make_exception(status_code: int, **kwargs) -> JSONResponse:
 
 @app.exception_handler(HTTPException)
 def handle_http_exception(_, exception: HTTPException):
-    """
-    Handle http exceptions
-    """
+    """Handle http exceptions"""
 
     return make_exception(exception.status_code)
 
 
 @app.exception_handler(RequestValidationError)
 def handle_unprocessable_entity(_, exception: RequestValidationError):
-    """
-    Handle invalid request parameters
-    """
+    """Handle invalid request parameters"""
 
     return make_exception(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exception.errors())
 
 
 @app.exception_handler(Exception)
 def handle_internal_server_error(*_):
-    """
-    Handle any uncaught exception and return an Internal Server Error
-    """
+    """Handle any uncaught exception and return an Internal Server Error"""
 
     # todo: add sentry
     return make_exception(status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -79,9 +73,7 @@ def handle_internal_server_error(*_):
 
 @app.get("/{_:path}")
 def handle_not_found():
-    """
-    Handle Not Found exceptions
-    """
+    """Handle Not Found exceptions"""
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 

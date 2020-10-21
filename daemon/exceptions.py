@@ -10,4 +10,11 @@ class EndpointException(Exception):
         self._kwargs: dict = kwargs
 
     def make_response(self) -> JSONResponse:
+        """
+        Create a JSONResponse object from this exception
+        containing an error message as specified in the protocol
+
+        :return: the JSONResponse object
+        """
+
         return JSONResponse({**self._kwargs, "error": self._error}, status_code=self._status_code)

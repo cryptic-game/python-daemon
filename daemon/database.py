@@ -35,24 +35,46 @@ class DB:
         self.Base: DeclarativeMeta = declarative_base()
 
     def add(self, obj: T) -> T:
+        """
+        Add a new row to the database
+
+        :param obj: the row to insert
+        :return: the same row
+        """
+
         self.session.add(obj)
         return obj
 
     def delete(self, obj: T) -> T:
+        """
+        Remove a row from the database
+
+        :param obj: the row to remove
+        :return: the same row
+        """
+
         self.session.delete(obj)
         return obj
 
     def query(self, *entities, **kwargs) -> Query:
+        """shortcut for db.session.query()"""
+
         return self.session.query(*entities, **kwargs)
 
     def commit(self):
+        """shortcut for db.session.commit()"""
+
         self.session.commit()
 
     def close(self):
+        """close the current session"""
+
         self._Session.remove()
 
     @property
     def session(self) -> Session:
+        """get the session object for the current thread"""
+
         return self._Session()
 
 

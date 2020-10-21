@@ -2,6 +2,14 @@ import os
 
 
 def get_bool(key: str, default: bool) -> bool:
+    """
+    Get a boolean value from the environment variables
+
+    :param key: key of the env var
+    :param default: default value
+    :return: the boolean value
+    """
+
     return os.getenv(key, str(default)).lower() in ("true", "t", "yes", "y", "1")
 
 
