@@ -16,7 +16,10 @@ psycopg2 = "*"
 
 [dev-packages]
 flake8 = "*"
+sphinx = "*"
+sphinx-press-theme = "*"
 
 [scripts]
 flake8 = "flake8 daemon --count --statistics --show-source"
 daemon = "python daemon/daemon.py"
+docs = "make -C docs html"

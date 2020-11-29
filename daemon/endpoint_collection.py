@@ -6,7 +6,7 @@ from fastapi import FastAPI, Depends
 from pydantic import decorator, BaseModel
 from pydantic.fields import ModelField
 
-from authorization import authorized
+from authorization import HTTPAuthorization
 from database import db
 from exceptions import EndpointException
 
@@ -21,14 +21,14 @@ def _create_model_from_function(func: Function) -> BaseModel:
     :return: the pydantic model
     """
 
-    model = decorator.ValidatedFunction(func).model
+    model = decorator.ValidatedFunction(func, None).model
     model.__fields__ = {k: v for k, v in model.__fields__.items() if k in func.__code__.co_varnames}
     for k, v in func.__annotations__.items():
         if get_origin(v) is Union and type(None) in v.__args__:
             field: ModelField = model.__fields__[k]
             field.required = False
             field.default = None
-    model.__fields__["user_id"] = decorator.ValidatedFunction(lambda user_id: None).model.__fields__["user_id"]
+    model.__fields__["user_id"] = decorator.ValidatedFunction(lambda user_id: None, None).model.__fields__["user_id"]
     return model
 
 
@@ -36,10 +36,17 @@ class Endpoint:
     """Daemon endpoint"""
 
     def __init__(self, collection: "EndpointCollection", name: str, func: Function):
+        """
+        :param collection: the parent endpoint collection
+        :param name: the name of this endpoint
+        :param func: the callback function
+        """
+
         self._collection: EndpointCollection = collection
         self._name: str = name
         self._func: Function = func
         self._model: BaseModel = _create_model_from_function(self._func)
+        self.description: dict = self._describe()
 
     @property
     def path(self) -> str:
@@ -47,7 +54,7 @@ class Endpoint:
 
         return f"{self._collection.path}/{self._name}"
 
-    def describe(self) -> dict:
+    def _describe(self) -> dict:
         """
         Describe the endpoint according to the protocol
 
@@ -93,12 +100,12 @@ class Endpoint:
         Register this endpoint in the FastAPI app
 
         :param app: the FastAPI app
-        :return: the endpoint description for the /daemon/endpoints endpoint
+        :return: the endpoint description for the `/daemon/endpoints` endpoint
         """
 
         model = self._model
 
-        @app.post(self.path, dependencies=[Depends(authorized)])
+        @app.post(self.path, dependencies=[Depends(HTTPAuthorization())])
         def inner(params: model):
             """
             Wrapper function of all daemon endpoints
@@ -117,13 +124,18 @@ class Endpoint:
             finally:
                 db.close()
 
-        return self.describe()
+        return self.description
 
 
 class EndpointCollection:
     """Collection of daemon endpoints"""
 
     def __init__(self, name: str, description: str):
+        """
+        :param name: the name of this endpoint collection
+        :param description: the description of this endpoint collection
+        """
+
         if not re.match(r"^[a-zA-Z0-9\-_]+(/[a-zA-Z0-9\-_]+)*$", name):
             raise ValueError("empty endpoint collection name")
 
@@ -171,7 +183,7 @@ class EndpointCollection:
         Register this endpoint collection in the FastAPI app
 
         :param app: the FastAPI app
-        :return: the endpoint collection description for the /daemon/endpoints endpoint
+        :return: the endpoint collection description for the `/daemon/endpoints` endpoint
         """
 
         return {

@@ -19,9 +19,24 @@ T = TypeVar("T")
 
 
 class DB:
-    """Database connection"""
+    """
+    Database connection
 
-    def __init__(self, location: str, database: str, username: str, password: str, echo: bool):
+    Attributes
+    ----------
+    engine: :class:`sqlalchemy.engine.Engine`
+    Base: :class:`sqlalchemy.ext.declarative.DeclarativeMeta`
+    """
+
+    def __init__(self, location: str, database: str, username: str, password: str, echo: bool = False):
+        """
+        :param location: location of the sql server
+        :param database: name of the database
+        :param username: name of the sql user
+        :param password: password of the sql user
+        :param echo: whether sql queries should be logged
+        """
+
         protocol, location = location.split("://")
         self.engine: Engine = create_engine(
             f"{protocol}://{username}:{password}@{location}/{database}",
@@ -59,12 +74,12 @@ class DB:
         return obj
 
     def query(self, *entities, **kwargs) -> Query:
-        """Shortcut for db.session.query()"""
+        """Shortcut for :meth:`sqlalchemy.orm.session.Session.query`"""
 
         return self.session.query(*entities, **kwargs)
 
     def commit(self):
-        """Shortcut for db.session.commit()"""
+        """Shortcut for :meth:`sqlalchemy.orm.session.Session.commit`"""
 
         self.session.commit()
 

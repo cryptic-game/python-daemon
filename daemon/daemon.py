@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 
-from authorization import authorized
+from authorization import HTTPAuthorization
 from config import API_TOKEN, HOST, PORT, DEBUG
 from database import db
 from endpoints import ENDPOINT_COLLECTIONS
@@ -24,7 +24,7 @@ if not API_TOKEN:
 endpoints = [collection.register(app) for collection in ENDPOINT_COLLECTIONS]
 
 
-@app.get("/daemon/endpoints", dependencies=[Depends(authorized)])
+@app.get("/daemon/endpoints", dependencies=[Depends(HTTPAuthorization())])
 def daemon_endpoints():
     """
     Daemon info endpoint for the server
@@ -35,7 +35,7 @@ def daemon_endpoints():
     return endpoints
 
 
-def make_exception(status_code: int, **kwargs) -> JSONResponse:
+def _make_exception(status_code: int, **kwargs) -> JSONResponse:
     """
     Create a JSONResponse object containing an error message
     as specified in the protocol
@@ -53,14 +53,14 @@ def make_exception(status_code: int, **kwargs) -> JSONResponse:
 def handle_http_exception(_, exception: HTTPException):
     """Handle http exceptions"""
 
-    return make_exception(exception.status_code)
+    return _make_exception(exception.status_code)
 
 
 @app.exception_handler(RequestValidationError)
 def handle_unprocessable_entity(_, exception: RequestValidationError):
     """Handle invalid request parameters"""
 
-    return make_exception(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exception.errors())
+    return _make_exception(status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exception.errors())
 
 
 @app.exception_handler(Exception)
@@ -68,7 +68,7 @@ def handle_internal_server_error(*_):
     """Handle any uncaught exception and return an Internal Server Error"""
 
     # todo: add sentry
-    return make_exception(status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return _make_exception(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @app.get("/{_:path}")

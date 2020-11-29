@@ -5,6 +5,12 @@ class EndpointException(Exception):
     """Base class for all endpoint exceptions"""
 
     def __init__(self, status_code: int, error: str, **kwargs):
+        """
+        :param status_code: http status code
+        :param error: error message
+        :param kwargs: additional error details
+        """
+
         super().__init__()
 
         self._status_code: int = status_code
