@@ -62,3 +62,5 @@ autodoc_default_options = {
 autodoc_typehints = "description"
 
 autodoc_member_order = "bysource"
+
+html_copy_source = False
