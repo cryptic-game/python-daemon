@@ -1,5 +1,6 @@
 import sys
 
+import sentry_sdk
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
 from fastapi.exceptions import RequestValidationError
@@ -7,9 +8,13 @@ from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 
 from authorization import HTTPAuthorization
-from config import API_TOKEN, HOST, PORT, DEBUG
+from config import API_TOKEN, HOST, PORT, DEBUG, SQL_CREATE_TABLES, SENTRY_DSN
 from database import db
 from endpoints import ENDPOINT_COLLECTIONS
+
+if SENTRY_DSN:
+    sentry_sdk.init(dsn=SENTRY_DSN, attach_stacktrace=True, shutdown_timeout=5)
+
 
 app = FastAPI()
 
@@ -67,7 +72,6 @@ def handle_unprocessable_entity(_, exception: RequestValidationError):
 def handle_internal_server_error(*_):
     """Handle any uncaught exception and return an Internal Server Error"""
 
-    # todo: add sentry
     return _make_exception(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -79,5 +83,6 @@ def handle_not_found():
 
 
 if __name__ == "__main__":
-    db.Base.metadata.create_all(db.engine)  # todo: remove this
+    if SQL_CREATE_TABLES:
+        db.Base.metadata.create_all(db.engine)
     uvicorn.run("daemon:app", host=HOST, port=PORT, reload=DEBUG)

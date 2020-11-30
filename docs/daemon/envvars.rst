@@ -15,4 +15,6 @@ Variable Name          Default Value                    Description
 `SQL_SERVER_USERNAME`  `"cryptic"`                      Username of sql server
 `SQL_SERVER_PASSWORD`  `"cryptic"`                      Password of sql server
 `SQL_SHOW_STATEMENTS`  `False`                          Whether sql queries should be logged
+`SQL_CREATE_TABLES`    `False`                          Whether to create tables automatically
+`SENTRY_DSN`           `None`                           Sentry data source name
 =====================  ===============================  ================================================

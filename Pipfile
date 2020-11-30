@@ -13,6 +13,7 @@ pydantic = "*"
 starlette = "*"
 sqlalchemy = "*"
 psycopg2 = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 flake8 = "*"
