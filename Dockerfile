@@ -1,4 +1,4 @@
-FROM python:3.8-alpine AS builder
+FROM python:3.9-alpine AS builder
 
 RUN apk add --no-cache gcc=9.3.0-r2 musl-dev=1.1.24-r10 postgresql-dev=12.5-r0
 
@@ -13,7 +13,7 @@ ARG PIPENV_NOSPIN=true
 ARG PIPENV_VENV_IN_PROJECT=true
 RUN pipenv install --deploy --ignore-pipfile
 
-FROM python:3.8-alpine
+FROM python:3.9-alpine
 
 RUN set -x \
     && apk add --no-cache bash=5.0.17-r0 libpq=12.5-r0 \
