@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
 
 [packages]
 fastapi = "*"
@@ -19,8 +19,11 @@ sentry-sdk = "*"
 flake8 = "*"
 sphinx = "*"
 sphinx-press-theme = "*"
+coverage = {extras = ["toml"], version = "*"}
 
 [scripts]
 flake8 = "flake8 daemon --count --statistics --show-source"
 daemon = "python daemon/daemon.py"
 docs = "make -C docs html"
+test = "sh test.sh"
+coverage = "sh coverage.sh"
