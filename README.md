@@ -31,7 +31,7 @@ pipenv run docs
 ## Development
 
 ### Prerequisites
-- [Python](https://python.org/) >=3.8
+- [Python](https://python.org/) >=3.9
 - [Pipenv](https://github.com/pypa/pipenv/)
 - [Black](https://github.com/psf/black/)
 - [Git](https://git-scm.com/)
