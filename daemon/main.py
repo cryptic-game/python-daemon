@@ -8,6 +8,8 @@ from database import db
 
 
 def setup_sentry():
+    """Initialize sentry connection if environment variable is set"""
+
     if not SENTRY_DSN:
         return
 
@@ -15,6 +17,8 @@ def setup_sentry():
 
 
 def check_api_token():
+    """Ensure that the api token environment variable is set"""
+
     if API_TOKEN:
         return
 
@@ -26,6 +30,8 @@ def check_api_token():
 
 
 def create_tables():
+    """Create database tables if environment variable is set"""
+
     if not SQL_CREATE_TABLES:
         return
 
@@ -33,6 +39,8 @@ def create_tables():
 
 
 def main():
+    """Main function of the Python Daemon"""
+
     setup_sentry()
     check_api_token()
     create_tables()
