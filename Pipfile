@@ -23,7 +23,7 @@ coverage = {extras = ["toml"], version = "*"}
 
 [scripts]
 flake8 = "flake8 daemon --count --statistics --show-source"
-daemon = "python daemon/daemon.py"
+daemon = "python daemon/main.py"
 docs = "make -C docs html"
 test = "sh test.sh"
 coverage = "sh coverage.sh"

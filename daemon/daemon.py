@@ -1,32 +1,17 @@
-import sys
-
-import sentry_sdk
 import uvicorn
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, status
+from fastapi.exceptions import HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 
 from authorization import HTTPAuthorization
-from config import API_TOKEN, HOST, PORT, DEBUG, SQL_CREATE_TABLES, SENTRY_DSN
-from database import db
-from endpoints import ENDPOINT_COLLECTIONS
+from config import HOST, PORT, DEBUG
+from endpoints import register_collections
 
-if SENTRY_DSN:
-    sentry_sdk.init(dsn=SENTRY_DSN, attach_stacktrace=True, shutdown_timeout=5)
-
-
+# create fastapi app and register endpoint collections
 app = FastAPI()
-
-if not API_TOKEN:
-    if DEBUG:
-        print("\033[33mWARNING: No API token specified, endpoints can be accessed without authentication!\033[0m")
-    else:
-        print("\033[31m\033[1mERROR: No API token specified!\033[0m")
-        sys.exit(1)
-
-# register endpoint collections and prepare response for /daemon/endpoints endpoint
-endpoints = [collection.register(app) for collection in ENDPOINT_COLLECTIONS]
+endpoints: list[dict] = register_collections(app)
 
 
 @app.get("/daemon/endpoints", dependencies=[Depends(HTTPAuthorization())])
@@ -34,7 +19,7 @@ def daemon_endpoints():
     """
     Daemon info endpoint for the server
 
-    :return: a dict containing information about all endpoints and endpoint collections
+    :return: a list of dicts containing information about all endpoints and endpoint collections
     """
 
     return endpoints
@@ -82,7 +67,7 @@ def handle_not_found():
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-if __name__ == "__main__":
-    if SQL_CREATE_TABLES:
-        db.Base.metadata.create_all(db.engine)
+def run_daemon():
+    """Run the uvicorn http server"""
+
     uvicorn.run("daemon:app", host=HOST, port=PORT, reload=DEBUG)

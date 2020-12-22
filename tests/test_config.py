@@ -1,12 +1,8 @@
-from importlib import machinery, util
 from unittest.case import TestCase
 from unittest.mock import patch
 
 from config import get_bool
-
-
-def import_module(module: str):
-    return machinery.SourceFileLoader(module, util.find_spec(module).origin).load_module(module)
+from utils import import_module
 
 
 class TestConfig(TestCase):

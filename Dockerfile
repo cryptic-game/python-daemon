@@ -28,4 +28,4 @@ COPY --from=builder /build/.venv/lib /usr/local/lib
 
 COPY ./daemon /app/
 
-CMD python daemon.py
+CMD python main.py
