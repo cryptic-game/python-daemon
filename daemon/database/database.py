@@ -95,10 +95,17 @@ class DB:
         return self._Session()
 
 
-db = DB(
-    location=SQL_SERVER_LOCATION,
-    database=SQL_SERVER_DATABASE,
-    username=SQL_SERVER_USERNAME,
-    password=SQL_SERVER_PASSWORD,
-    echo=SQL_SHOW_STATEMENTS,
-)
+def get_database() -> DB:
+    """
+    Create a database connection object using the environment variables
+
+    :return: The DB object
+    """
+
+    return DB(
+        location=SQL_SERVER_LOCATION,
+        database=SQL_SERVER_DATABASE,
+        username=SQL_SERVER_USERNAME,
+        password=SQL_SERVER_PASSWORD,
+        echo=SQL_SHOW_STATEMENTS,
+    )
