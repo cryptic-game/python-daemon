@@ -133,6 +133,12 @@
           </li>
 
         
+          <li class="toctree-l1 "><a href="bootstrap.html" class="reference internal ">Bootstrap</a>
+
+            
+          </li>
+
+        
           <li class="toctree-l1 "><a href="daemon.html" class="reference internal ">Daemon</a>
 
             
@@ -202,13 +208,19 @@
             
   <div class="section" id="database-connection">
 <h1>Database Connection<a class="headerlink" href="#database-connection" title="Permalink to this headline">¶</a></h1>
+<dl class="py data">
+<dt id="database.db">
+<code class="sig-name descname">db</code><em class="property">: <a class="reference internal" href="#database.database.DB" title="database.database.DB">database.database.DB</a></em><a class="headerlink" href="#database.db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Global database connection instance</p>
+</dd></dl>
+
 <dl class="py class">
-<dt id="database.DB">
-<em class="property">class </em><code class="sig-name descname">DB</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">database</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">echo</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.DB" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB">
+<em class="property">class </em><code class="sig-name descname">DB</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">database</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">echo</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.database.DB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Database connection</p>
 <dl class="py attribute">
-<dt id="database.DB.engine">
-<code class="sig-name descname">engine</code><a class="headerlink" href="#database.DB.engine" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.engine">
+<code class="sig-name descname">engine</code><a class="headerlink" href="#database.database.DB.engine" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.sqlalchemy.org/en/13/core/connections.html#sqlalchemy.engine.Engine" title="(in SQLAlchemy v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.engine.Engine</span></code></a></p>
@@ -217,8 +229,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="database.DB.Base">
-<code class="sig-name descname">Base</code><a class="headerlink" href="#database.DB.Base" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.Base">
+<code class="sig-name descname">Base</code><a class="headerlink" href="#database.database.DB.Base" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.DeclarativeMeta</span></code></p>
@@ -227,8 +239,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="database.DB.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">database</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">echo</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.DB.__init__" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">database</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">echo</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.database.DB.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -243,8 +255,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="database.DB.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.DB.add" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.database.DB.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new row to the database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -260,8 +272,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="database.DB.delete">
-<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.DB.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.database.DB.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a row from the database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -277,8 +289,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="database.DB.query">
-<code class="sig-name descname">query</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">entities</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.DB.query" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.query">
+<code class="sig-name descname">query</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">entities</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#database.database.DB.query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut for <a class="reference external" href="https://docs.sqlalchemy.org/en/13/orm/session_api.html#sqlalchemy.orm.session.Session.query" title="(in SQLAlchemy v1.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sqlalchemy.orm.session.Session.query()</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -288,23 +300,37 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="database.DB.commit">
-<code class="sig-name descname">commit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.DB.commit" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.commit">
+<code class="sig-name descname">commit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.database.DB.commit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shortcut for <a class="reference external" href="https://docs.sqlalchemy.org/en/13/orm/session_api.html#sqlalchemy.orm.session.Session.commit" title="(in SQLAlchemy v1.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sqlalchemy.orm.session.Session.commit()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="database.DB.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.DB.close" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.database.DB.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close the current session</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="database.DB.session">
-<em class="property">property </em><code class="sig-name descname">session</code><a class="headerlink" href="#database.DB.session" title="Permalink to this definition">¶</a></dt>
+<dt id="database.database.DB.session">
+<em class="property">property </em><code class="sig-name descname">session</code><a class="headerlink" href="#database.database.DB.session" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the session object for the current thread</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt id="database.database.get_database">
+<code class="sig-name descname">get_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#database.database.get_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a database connection object using the environment variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The DB object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#database.database.DB" title="database.database.DB">database.database.DB</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

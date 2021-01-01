@@ -132,6 +132,12 @@
           </li>
 
         
+          <li class="toctree-l1 "><a href="daemon/bootstrap.html" class="reference internal ">Bootstrap</a>
+
+            
+          </li>
+
+        
           <li class="toctree-l1 "><a href="daemon/daemon.html" class="reference internal ">Daemon</a>
 
             
@@ -208,7 +214,7 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.__init__">__init__() (DB method)</a>
+      <li><a href="daemon/database.html#database.database.DB.__init__">__init__() (DB method)</a>
 
       <ul>
         <li><a href="daemon/endpoint_collection.html#endpoint_collection.Endpoint.__init__">(Endpoint method)</a>
@@ -224,7 +230,7 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.add">add() (DB method)</a>
+      <li><a href="daemon/database.html#database.database.DB.add">add() (DB method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -232,7 +238,18 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.Base">Base (DB attribute)</a>
+      <li><a href="daemon/database.html#database.database.DB.Base">Base (DB attribute)</a>
+</li>
+      <li>
+    bootstrap
+
+      <ul>
+        <li><a href="daemon/bootstrap.html#module-bootstrap">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="daemon/bootstrap.html#bootstrap.bootstrap">bootstrap() (in module bootstrap)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -240,11 +257,15 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.close">close() (DB method)</a>
+      <li><a href="daemon/bootstrap.html#bootstrap.check_api_token">check_api_token() (in module bootstrap)</a>
+</li>
+      <li><a href="daemon/database.html#database.database.DB.close">close() (DB method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.commit">commit() (DB method)</a>
+      <li><a href="daemon/database.html#database.database.DB.commit">commit() (DB method)</a>
+</li>
+      <li><a href="daemon/bootstrap.html#bootstrap.create_tables">create_tables() (in module bootstrap)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -254,11 +275,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="daemon/daemon.html#daemon.daemon_endpoints">daemon_endpoints() (in module daemon)</a>
 </li>
-      <li><a href="daemon/database.html#database.DB">DB (class in database)</a>
+      <li><a href="daemon/database.html#database.database.DB">DB (class in database.database)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.delete">delete() (DB method)</a>
+      <li><a href="daemon/database.html#database.db">db (in module database)</a>
+</li>
+      <li><a href="daemon/database.html#database.database.DB.delete">delete() (DB method)</a>
 </li>
       <li><a href="daemon/endpoints/device.html#endpoints.device.device_info">device_info() (in module endpoints.device)</a>
 </li>
@@ -278,7 +301,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="daemon/exceptions.html#exceptions.EndpointException">EndpointException (class in exceptions)</a>
 </li>
-      <li><a href="daemon/database.html#database.DB.engine">engine (DB attribute)</a>
+      <li><a href="daemon/database.html#database.database.DB.engine">engine (DB attribute)</a>
 </li>
       <li><a href="daemon/endpoints/counter.html#endpoints.counter.exception">exception() (in module endpoints.counter)</a>
 </li>
@@ -289,6 +312,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="daemon/endpoints/counter.html#endpoints.counter.get">get() (in module endpoints.counter)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="daemon/database.html#database.database.get_database">get_database() (in module database.database)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -314,10 +341,17 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="daemon/endpoints/counter.html#endpoints.counter.magic">magic() (in module endpoints.counter)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="daemon/exceptions.html#exceptions.EndpointException.make_response">make_response() (EndpointException method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    module
+
+      <ul>
+        <li><a href="daemon/bootstrap.html#module-bootstrap">bootstrap</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -336,7 +370,7 @@
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.query">query() (DB method)</a>
+      <li><a href="daemon/database.html#database.database.DB.query">query() (DB method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -351,16 +385,22 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="daemon/daemon.html#daemon.run_daemon">run_daemon() (in module daemon)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="daemon/database.html#database.DB.session">session() (DB property)</a>
+      <li><a href="daemon/database.html#database.database.DB.session">session() (DB property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="daemon/endpoints/counter.html#endpoints.counter.set_value">set_value() (in module endpoints.counter)</a>
+</li>
+      <li><a href="daemon/bootstrap.html#bootstrap.setup_sentry">setup_sentry() (in module bootstrap)</a>
 </li>
   </ul></td>
 </tr></table>

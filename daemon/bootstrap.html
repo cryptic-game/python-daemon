@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-      <title>HTTP Authorization</title>
+      <title>Bootstrap</title>
     
       <link rel="stylesheet" href="../_static/pygments.css">
       <link rel="stylesheet" href="../_static/theme.css">
@@ -23,8 +23,8 @@
     
   <link rel="index" title="Index" href="../genindex.html" />
   <link rel="search" title="Search" href="../search.html" />
-  <link rel="next" title="Bootstrap" href="bootstrap.html" />
-  <link rel="prev" title="Device Endpoints" href="endpoints/device.html" /> 
+  <link rel="next" title="Daemon" href="daemon.html" />
+  <link rel="prev" title="HTTP Authorization" href="authorization.html" /> 
   </head>
 
   <body>
@@ -127,20 +127,20 @@
       </p>
       <ul class="current">
         
-          <li class="toctree-l1 current"><a href="#" class="reference internal current">HTTP Authorization</a>
+          <li class="toctree-l1 "><a href="authorization.html" class="reference internal ">HTTP Authorization</a>
 
-            
-              <ul>
-                
-                  <li class="toctree-l2"><a href="#http-authorization" class="reference internal">HTTP Authorization</a></li>
-                
-              </ul>
             
           </li>
 
         
-          <li class="toctree-l1 "><a href="bootstrap.html" class="reference internal ">Bootstrap</a>
+          <li class="toctree-l1 current"><a href="#" class="reference internal current">Bootstrap</a>
 
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#module-bootstrap" class="reference internal">Bootstrap</a></li>
+                
+              </ul>
             
           </li>
 
@@ -187,18 +187,18 @@
   <ul class="breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
     
-    <li>HTTP Authorization</li>
+    <li>Bootstrap</li>
   </ul>
   
 
   <ul class="page-nav">
   <li class="prev">
-    <a href="endpoints/device.html"
-       title="previous chapter">← Device Endpoints</a>
+    <a href="authorization.html"
+       title="previous chapter">← HTTP Authorization</a>
   </li>
   <li class="next">
-    <a href="bootstrap.html"
-       title="next chapter">Bootstrap →</a>
+    <a href="daemon.html"
+       title="next chapter">Daemon →</a>
   </li>
 </ul>
   
@@ -206,12 +206,30 @@
 <hr>
           <div class="content" role="main">
             
-  <div class="section" id="http-authorization">
-<h1>HTTP Authorization<a class="headerlink" href="#http-authorization" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="authorization.HTTPAuthorization">
-<em class="property">class </em><code class="sig-name descname">HTTPAuthorization</code><a class="headerlink" href="#authorization.HTTPAuthorization" title="Permalink to this definition">¶</a></dt>
-<dd><p>FastAPI dependency class for http authorization</p>
+  <div class="section" id="module-bootstrap">
+<span id="bootstrap"></span><h1>Bootstrap<a class="headerlink" href="#module-bootstrap" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="bootstrap.setup_sentry">
+<code class="sig-name descname">setup_sentry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap.setup_sentry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize sentry connection if environment variable is set</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bootstrap.check_api_token">
+<code class="sig-name descname">check_api_token</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap.check_api_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that the api token environment variable is set</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bootstrap.create_tables">
+<code class="sig-name descname">create_tables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap.create_tables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create database tables if environment variable is set</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bootstrap.bootstrap">
+<code class="sig-name descname">bootstrap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bootstrap.bootstrap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function of the Python Daemon</p>
 </dd></dl>
 
 </div>
@@ -221,12 +239,12 @@
           <div class="page-nav">
             <div class="inner"><ul class="page-nav">
   <li class="prev">
-    <a href="endpoints/device.html"
-       title="previous chapter">← Device Endpoints</a>
+    <a href="authorization.html"
+       title="previous chapter">← HTTP Authorization</a>
   </li>
   <li class="next">
-    <a href="bootstrap.html"
-       title="next chapter">Bootstrap →</a>
+    <a href="daemon.html"
+       title="next chapter">Daemon →</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2020, The Cryptic Python Team.
