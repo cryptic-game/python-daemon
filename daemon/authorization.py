@@ -27,8 +27,9 @@ class HTTPAuthorization(SecurityBase):
 
         # otherwise compare token with authorization header
         authorization: str = request.headers.get("Authorization")
-        return authorization and authorization.strip("Bearer ") == self._token
+
+        return authorization and authorization.removeprefix("Bearer ") == self._token
 
     async def __call__(self, request: Request):
         if not await self._check_authorization(request):
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)

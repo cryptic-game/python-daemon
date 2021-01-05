@@ -42,10 +42,10 @@ class TestAuthorization(IsolatedAsyncioTestCase):
         authorization._token = Mock()
 
         mock = Mock()
-        mock.headers.get().strip.return_value = authorization._token
+        mock.headers.get().removeprefix.return_value = authorization._token
         self.assertEqual(True, await authorization._check_authorization(mock))
 
-        mock.headers.get().strip.return_value = Mock()
+        mock.headers.get().removeprefix.return_value = Mock()
         self.assertEqual(False, await authorization._check_authorization(mock))
 
-        mock.headers.get().strip.assert_called_with("Bearer ")
+        mock.headers.get().removeprefix.assert_called_with("Bearer ")
