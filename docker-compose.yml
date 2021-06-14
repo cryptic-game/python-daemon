@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  daemon:
+    image: crypticcp/python-daemon
+    restart: always
+    env_file: daemon.env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - cryptic
+
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - cryptic
+
+  db:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_USER: cryptic
+      POSTGRES_PASSWORD: cryptic
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - cryptic
+
+networks:
+  cryptic:
