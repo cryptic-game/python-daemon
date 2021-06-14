@@ -1,7 +1,7 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
+name = "pypi"
 
 [requires]
 python_version = "3.9"
@@ -11,19 +11,26 @@ fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
 starlette = "*"
+aiohttp = "*"
+aioredis = "*"
+nest-asyncio = "*"
 sqlalchemy = "*"
-psycopg2 = "*"
+aiomysql = "*"
+asyncpg = "*"
 sentry-sdk = "*"
 
 [dev-packages]
-flake8 = "*"
 sphinx = "*"
 sphinx-press-theme = "*"
+black = "==20.8b1"
+flake8 = "*"
+wemake-python-styleguide = "*"
 coverage = {extras = ["toml"], version = "*"}
 
 [scripts]
-flake8 = "flake8 daemon --count --statistics --show-source"
 daemon = "python daemon/main.py"
 docs = "make -C docs html"
+black = "black -l 120 ."
+flake8 = "flake8 daemon --count --statistics --show-source"
 test = "sh test.sh"
 coverage = "sh coverage.sh"
