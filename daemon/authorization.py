@@ -2,7 +2,7 @@ from fastapi import Request, HTTPException, status
 from fastapi.openapi.models import HTTPBearer
 from fastapi.security.base import SecurityBase
 
-from config import API_TOKEN
+from environment import API_TOKEN
 
 
 class HTTPAuthorization(SecurityBase):

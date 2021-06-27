@@ -6,7 +6,7 @@ device_collection = EndpointCollection("device", "some device endpoints")
 
 
 @device_collection.endpoint("info")
-def device_info(user_id: str, foo: str, bar: int, test: Optional[str]):
+async def device_info(user_id: str, foo: str, bar: int, test: Optional[str]):
     """
     Test endpoint
 

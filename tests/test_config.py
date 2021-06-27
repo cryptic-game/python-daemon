@@ -1,7 +1,7 @@
 from unittest.case import TestCase
 from unittest.mock import patch
 
-from config import get_bool
+from environment import get_bool
 from utils import import_module
 
 

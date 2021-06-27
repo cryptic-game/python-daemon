@@ -10,5 +10,5 @@ class Counter(db.Base):
 
     __tablename__ = "counter"
 
-    user_id: Union[Column, str] = Column(String, primary_key=True, unique=True)
+    user_id: Union[Column, str] = Column(String(36), primary_key=True, unique=True)
     value: Union[Column, int] = Column(Integer)

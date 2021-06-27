@@ -11,7 +11,7 @@ counter_collection = EndpointCollection("counter", "test endpoints")
 
 
 @counter_collection.endpoint
-def exception():
+async def exception():
     """
     Raises an exception
 
@@ -22,7 +22,7 @@ def exception():
 
 
 @counter_collection.endpoint
-def get(user_id: str) -> int:
+async def get(user_id: str) -> int:
     """
     Fetch the current counter value
 
@@ -30,7 +30,7 @@ def get(user_id: str) -> int:
     :return: the current counter value
     """
 
-    counter: Optional[Counter] = db.query(Counter).get(user_id)
+    counter: Optional[Counter] = await db.get(Counter, user_id=user_id)
     if counter is None:
         raise EndpointException(status.HTTP_404_NOT_FOUND, "counter_not_found")
 
@@ -38,7 +38,7 @@ def get(user_id: str) -> int:
 
 
 @counter_collection.endpoint()
-def increment(user_id: str) -> dict:
+async def increment(user_id: str) -> dict:
     """
     Increment the counter value
 
@@ -46,19 +46,18 @@ def increment(user_id: str) -> dict:
     :return: the old and the new counter value
     """
 
-    if counter := db.query(Counter).get(user_id):
+    if counter := await db.get(Counter, user_id=user_id):
         old = counter.value
         counter.value += 1
     else:
         old = None
-        counter = db.add(Counter(user_id=user_id, value=1))
-    db.commit()
+        counter = await db.add(Counter(user_id=user_id, value=1))
 
     return {"old": old, "new": counter.value}
 
 
 @counter_collection.endpoint("reset")
-def magic(user_id: str):
+async def magic(user_id: str):
     """
     Reset the counter using magic
 
@@ -66,18 +65,17 @@ def magic(user_id: str):
     :return: True
     """
 
-    counter: Optional[Counter] = db.query(Counter).get(user_id)
+    counter: Optional[Counter] = await db.get(Counter, user_id=user_id)
     if counter is None:
         raise EndpointException(status.HTTP_404_NOT_FOUND, "counter_not_found")
 
-    db.delete(counter)
-    db.commit()
+    await db.delete(counter)
 
     return True
 
 
 @counter_collection.endpoint("set")
-def set_value(user_id: str, password: str, value: int):
+async def set_value(user_id: str, password: str, value: int):
     """
     Set the counter to a specific value
 
@@ -90,12 +88,11 @@ def set_value(user_id: str, password: str, value: int):
     if password != "S3cr3t":
         raise EndpointException(status.HTTP_401_UNAUTHORIZED, "wrong_password")
 
-    if counter := db.query(Counter).get(user_id):
+    if counter := await db.get(Counter, user_id=user_id):
         old = counter.value
         counter.value = value
     else:
         old = None
-        counter = db.add(Counter(user_id=user_id, value=value))
-    db.commit()
+        counter = await db.add(Counter(user_id=user_id, value=value))
 
     return {"old": old, "new": counter.value}

@@ -7,7 +7,6 @@ from pydantic import decorator, BaseModel
 from pydantic.fields import ModelField
 
 from authorization import HTTPAuthorization
-from database import db
 from exceptions import EndpointException
 
 Function = Union[FunctionType, MethodType]
@@ -106,7 +105,7 @@ class Endpoint:
         model = self._model
 
         @app.post(self.path, dependencies=[Depends(HTTPAuthorization())])
-        def inner(params: model):
+        async def inner(params: model):
             """
             Wrapper function of all daemon endpoints
 
@@ -118,11 +117,9 @@ class Endpoint:
                 kwargs = params.dict()
                 if "user_id" not in self._func.__code__.co_varnames:
                     kwargs.pop("user_id")
-                return self._func(**kwargs)
+                return await self._func(**kwargs)
             except EndpointException as e:
                 return e.make_response()
-            finally:
-                db.close()
 
         return self.description
 
