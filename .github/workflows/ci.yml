@@ -247,9 +247,8 @@ jobs:
           retention-days: 1
 
   docker_push:
-    if: "false" # ${{ github.event_name != 'pull_request' && github.actor != 'dependabot[bot]' }}
+    if: ${{ github.event_name != 'pull_request' && github.actor != 'dependabot[bot]' }}
     needs: [ codestyle, linter, tests, docs_build, docker_build ]
-    environment: docker
     runs-on: ubuntu-latest
 
     steps:
@@ -283,7 +282,7 @@ jobs:
         run: |
           set -ex
 
-          for file in $(ls */*); do
+          for file in $(ls */*.tar.gz); do
             echo Loading $file
             docker load -qi $file | cut -d' ' -f3 | xargs -L1 docker push
           done
