@@ -1,22 +1,16 @@
-<h1 align="center">Python Daemon</h1>
+<p>
 
-<p align="center">
-    <img alt="Docker Build" src="https://github.com/cryptic-game/python-daemon/workflows/Docker%20Build/badge.svg">
-    <img alt="Flake8" src="https://github.com/cryptic-game/python-daemon/workflows/Flake8/badge.svg">
-    <img alt="Sphinx Documentation" src="https://github.com/cryptic-game/python-daemon/workflows/Sphinx%20Documentation/badge.svg">
-    <a href="https://deepsource.io/gh/cryptic-game/python-daemon/?ref=repository-badge" style="text-decoration:none">
-        <img alt="DeepSource" src="https://deepsource.io/gh/cryptic-game/python-daemon.svg/?label=active+issues&show_trend=true">
-    </a>
-    <br>
-    <a href="https://github.com/psf/black" style="text-decoration:none">
-        <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
-    </a>
-    <a href="https://hub.docker.com/r/crypticcp/python-daemon" style="text-decoration:none">
-        <img alt="DockerHub - Python Daemon" src="https://img.shields.io/docker/pulls/crypticcp/python-daemon?style=flat-square&label=DockerHub%20-%20Python%20Daemon">
-    </a>
+  [![CI](https://github.com/cryptic-game/python-daemon/actions/workflows/ci.yml/badge.svg)](https://github.com/cryptic-game/python-daemon/actions/workflows/ci.yml)
+  [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+  [![Maintainability](https://api.codeclimate.com/v1/badges/fdda287e37d056ac5f0a/maintainability)](https://codeclimate.com/github/cryptic-game/python-daemon/maintainability)
+  [![Test Coverage](https://api.codeclimate.com/v1/badges/fdda287e37d056ac5f0a/test_coverage)](https://codeclimate.com/github/cryptic-game/python-daemon/test_coverage)
+  [![DockerHub - Python Daemon](https://img.shields.io/docker/pulls/crypticcp/python-daemon?style=flat-square&label=DockerHub%20-%20Python%20Daemon)](https://hub.docker.com/r/crypticcp/python-daemon)
+
 </p>
 
-<p align="center">The official Python Daemon of Cryptic</p>
+# Python Daemon
+
+The official Python Daemon of Cryptic
 
 
 ## Documentation
