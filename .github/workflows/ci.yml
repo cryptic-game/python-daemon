@@ -72,12 +72,15 @@ jobs:
       - name: Run unit tests with coverage
         run: pipenv run coverage
 
-#   - name: Send coverage report to deepsource
-#     run: |
-#       set -ex
-#       curl https://deepsource.io/cli | sh
-#       export DEEPSOURCE_DSN=${{ secrets.DEEPSOURCE_DSN }}
-#       ./bin/deepsource report --analyzer test-coverage --key python --value-file ./coverage.xml
+      - name: Send coverage report to codeclimate
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        run: |
+          set -ex
+
+          wget -O reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+          chmod +x reporter
+          ./reporter after-build
 
   docs_build:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
