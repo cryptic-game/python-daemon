@@ -18,7 +18,8 @@ async def get_user(user_id: UUID4 = Body(...)) -> str:
 
 def format_docs(func):
     doc = "\n".join(line.strip() for line in func.__doc__.splitlines()).replace(
-        "\n\n:param", "\n\n**Parameters:**\n:param"
+        "\n\n:param",
+        "\n\n**Parameters:**\n:param",
     )
     doc = re.sub(r":param ([a-zA-Z\d_]+):", r"- **\1:**", doc)
     doc = re.sub(r":returns?:", r"\n**Returns:**", doc)
