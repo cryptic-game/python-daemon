@@ -1,4 +1,4 @@
-name: Sphinx Documentation
+name: API Documentation
 
 on:
   push:
@@ -22,12 +22,14 @@ jobs:
     - name: Build documentation
       run: |
         pipenv run docs
+        mkdir build/html
+        mv build/docs.html build/html/index.html
     - name: Publish documentation
       uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
-        FOLDER: docs/build/html
+        FOLDER: build/html
         CLEAN: true
         GIT_CONFIG_NAME: GitHub Actions
         GIT_CONFIG_EMAIL: actions@github.com

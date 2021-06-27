@@ -29,7 +29,7 @@ coverage = {extras = ["toml"], version = "*"}
 
 [scripts]
 daemon = "sh daemon.sh"
-docs = "make -C docs html"
+docs = "sh docs.sh"
 black = "black -l 120 ."
 flake8 = "flake8 daemon --count --statistics --show-source"
 test = "sh test.sh"
