@@ -6,11 +6,14 @@ from fastapi.responses import JSONResponse
 
 from authorization import HTTPAuthorization
 from database import db
+from endpoint_collection import format_docs
 from endpoints import register_collections
+from environment import SQL_CREATE_TABLES
+from exceptions.api_exception import APIException
+from schemas.daemon import EndpointCollectionModel
+from utils import responses
 
 # create fastapi app and register endpoint collections
-from environment import SQL_CREATE_TABLES
-
 app = FastAPI(title="Python Daemon")
 endpoints: list[dict] = register_collections(app)
 
@@ -31,7 +34,13 @@ async def on_startup():
         await db.create_tables()
 
 
-@app.get("/daemon/endpoints", name="List Daemon Endpoints", dependencies=[Depends(HTTPAuthorization())])
+@app.get(
+    "/daemon/endpoints",
+    name="List Daemon Endpoints",
+    dependencies=[Depends(HTTPAuthorization())],
+    responses=responses(list[EndpointCollectionModel]),
+)
+@format_docs
 async def daemon_endpoints():
     """
     Daemon info endpoint for the server
@@ -54,6 +63,13 @@ def _make_exception(status_code: int, **kwargs) -> JSONResponse:
 
     detail = HTTPException(status_code).detail
     return JSONResponse({**kwargs, "error": f"{status_code} {detail}"}, status_code)
+
+
+@app.exception_handler(APIException)
+async def handle_api_exception(_, exception: APIException):
+    """Handle api exceptions"""
+
+    return exception.make_response()
 
 
 @app.exception_handler(HTTPException)

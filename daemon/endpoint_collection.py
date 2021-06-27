@@ -1,189 +1,68 @@
 import re
-from types import FunctionType, MethodType
-from typing import get_origin, Union, Dict, Optional
+from collections import namedtuple
+from types import FunctionType
+from typing import Optional
 
-from fastapi import FastAPI, Depends
-from pydantic import decorator, BaseModel
-from pydantic.fields import ModelField
+from fastapi import FastAPI, Depends, APIRouter, Body
+from pydantic import UUID4
 
 from authorization import HTTPAuthorization
-from exceptions import EndpointException
 
-Function = Union[FunctionType, MethodType]
-
-
-def _create_model_from_function(func: Function) -> BaseModel:
-    """
-    Create a pydantic model from a function
-
-    :param func: the function
-    :return: the pydantic model
-    """
-
-    model = decorator.ValidatedFunction(func, None).model
-    model.__fields__ = {k: v for k, v in model.__fields__.items() if k in func.__code__.co_varnames}
-    for k, v in func.__annotations__.items():
-        if get_origin(v) is Union and type(None) in v.__args__:
-            field: ModelField = model.__fields__[k]
-            field.required = False
-            field.default = None
-    model.__fields__["user_id"] = decorator.ValidatedFunction(lambda user_id: None, None).model.__fields__["user_id"]
-    return model
+Endpoint = namedtuple("Endpoint", ["name", "description"])
 
 
-class Endpoint:
-    """Daemon endpoint"""
-
-    def __init__(self, collection: "EndpointCollection", name: str, func: Function):
-        """
-        :param collection: the parent endpoint collection
-        :param name: the name of this endpoint
-        :param func: the callback function
-        """
-
-        self._collection: EndpointCollection = collection
-        self._name: str = name
-        self._func: Function = func
-        self._model: BaseModel = _create_model_from_function(self._func)
-        self.description: dict = self._describe()
-
-    @property
-    def path(self) -> str:
-        """Path of this endpoint"""
-
-        return f"{self._collection.path}/{self._name}"
-
-    def _describe(self) -> dict:
-        """
-        Describe the endpoint according to the protocol
-
-        :return: dict containing information about this endpoint
-        """
-
-        # parse docstring of the function
-        parameter_descriptions: Dict[str, str] = {}
-        endpoint_description: str = ""
-        reached_metadata = False
-        for line in map(str.strip, self._func.__doc__.splitlines()):
-            if not line:
-                continue
-
-            if match := re.match(r"^:param ([a-zA-Z0-9_]+): (.+)$", line):
-                parameter_descriptions[match.group(1)] = match.group(2)
-            elif not (reached_metadata := reached_metadata or line.startswith(":")):
-                endpoint_description += line + "\n"
-
-        # endpoint description must not be empty
-        endpoint_description = endpoint_description.strip()
-        if not endpoint_description:
-            raise RuntimeError(f"Description for endpoint '{self.path}' could not be found.")
-
-        # collect parameters from pydantic model and use descriptions from docstring
-        parameters = []
-        for name, field in self._model.__fields__.items():
-            if name == "user_id":
-                continue
-            if name not in parameter_descriptions:
-                raise RuntimeError(f"Description for paramter '{name}' of endpoint '{self.path}' could not be found.")
-            parameters.append({"id": name, "description": parameter_descriptions[name], "required": field.required})
-
-        return {
-            "id": self._name,
-            "description": endpoint_description,
-            "disabled": False,
-            "parameters": parameters,
-        }
-
-    def register(self, app: FastAPI) -> dict:
-        """
-        Register this endpoint in the FastAPI app
-
-        :param app: the FastAPI app
-        :return: the endpoint description for the `/daemon/endpoints` endpoint
-        """
-
-        model = self._model
-
-        @app.post(
-            self.path,
-            name=self.path.lstrip("/").lower(),
-            tags=[self._collection.name],
-            description=self.description["description"],
-            dependencies=[Depends(HTTPAuthorization())],
-        )
-        async def inner(params: model):
-            """
-            Wrapper function of all daemon endpoints
-
-            :param params: a pydantic model containing the parameters
-            :return: the response of the endpoint
-            """
-
-            try:
-                kwargs = params.dict()
-                if "user_id" not in self._func.__code__.co_varnames:
-                    kwargs.pop("user_id")
-                return await self._func(**kwargs)
-            except EndpointException as e:
-                return e.make_response()
-
-        return self.description
+@Depends
+async def get_user(user_id: UUID4 = Body(...)) -> str:
+    return str(user_id)
 
 
-class EndpointCollection:
+def format_docs(func):
+    doc = "\n".join(line.strip() for line in func.__doc__.splitlines()).replace(
+        "\n\n:param", "\n\n**Parameters:**\n:param"
+    )
+    doc = re.sub(r":param ([a-zA-Z\d_]+):", r"- **\1:**", doc)
+    doc = re.sub(r":returns?:", r"\n**Returns:**", doc)
+    func.__doc__ = doc
+    return func
+
+
+class EndpointCollection(APIRouter):
     """Collection of daemon endpoints"""
 
     def __init__(self, name: str, description: str):
-        """
-        :param name: the name of this endpoint collection
-        :param description: the description of this endpoint collection
-        """
-
-        if not re.match(r"^[a-zA-Z0-9\-_]+(/[a-zA-Z0-9\-_]+)*$", name):
-            raise ValueError("empty endpoint collection name")
+        super().__init__(prefix=f"/{name}", tags=[name], dependencies=[Depends(HTTPAuthorization())])
 
         self._name: str = name
         self._description: str = description
-        self._endpoints: Dict[str, Endpoint] = {}
+        self._endpoints: list[Endpoint] = []
+
+    def endpoint(self, name: Optional[str] = None, *args, **kwargs):
+        """
+        Register a new endpoint in this collection.
+
+        :param name: name of the endpoint
+        """
+
+        def deco(func):
+            """Decorator for endpoint registration"""
+
+            # use the function name if no other name is provided
+            _name = name if isinstance(name, str) else func.__name__
+
+            doc = "\n".join(line.strip() for line in func.__doc__.splitlines())
+            self._endpoints.append(Endpoint(_name, doc))
+
+            return self.post(f"/{_name}", *args, **kwargs)(format_docs(func))
+
+        return deco(name) if isinstance(name, FunctionType) else deco
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def path(self) -> str:
-        """Path of this endpoint collection"""
-
-        return f"/{self._name}"
-
-    def endpoint(self, name: Union[Optional[str], Function] = None):
-        """
-        Register a new endpoint in this collection
-
-        :param name: name of the endpoint
-        """
-
-        def deco(func):
-            """
-            Decorator for endpoint registration
-
-            :param func: endpoint function
-            :return: the same endpoint function
-            """
-
-            # use the function name if no other name is provided
-            _name = name if name and isinstance(name, str) else func.__name__
-
-            if not re.match(r"^[a-zA-Z0-9\-_]+$", _name):
-                raise ValueError("invalid endpoint name")
-
-            if _name in self._endpoints:
-                raise ValueError("endpoint already exists")
-
-            self._endpoints[_name] = Endpoint(self, _name, func)
-            return func
-
-        return deco(name) if isinstance(name, FunctionType) else deco
+    def description(self) -> str:
+        return self._description
 
     def register(self, app: FastAPI) -> dict:
         """
@@ -193,9 +72,18 @@ class EndpointCollection:
         :return: the endpoint collection description for the `/daemon/endpoints` endpoint
         """
 
+        app.include_router(self)
+
         return {
-            "id": self._name,
-            "description": self._description,
+            "id": self.name,
+            "description": self.description,
             "disabled": False,
-            "endpoints": [endpoint.register(app) for endpoint in self._endpoints.values()],
+            "endpoints": [
+                {
+                    "id": endpoint.name,
+                    "description": endpoint.description.strip().rpartition("\n\n")[0],
+                    "disabled": False,
+                }
+                for endpoint in self._endpoints
+            ],
         }

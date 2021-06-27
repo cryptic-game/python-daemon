@@ -1,11 +1,14 @@
 from typing import Optional
 
-from fastapi import status
+from fastapi import Body
 
 from database import db
-from endpoint_collection import EndpointCollection
-from exceptions import EndpointException
+from endpoint_collection import EndpointCollection, get_user
+from exceptions.counter import CounterNotFoundException, WrongPasswordException
 from models.counter import Counter
+from schemas.counter import ValueResponse, ValueChangedResponse
+from schemas.ok import OKResponse
+from utils import responses
 
 counter_collection = EndpointCollection("counter", "test endpoints")
 
@@ -21,8 +24,8 @@ async def exception():
     return 1 / 0
 
 
-@counter_collection.endpoint
-async def get(user_id: str) -> int:
+@counter_collection.endpoint(responses=responses(ValueResponse, CounterNotFoundException))
+async def get(user_id: str = get_user) -> int:
     """
     Fetch the current counter value
 
@@ -32,13 +35,13 @@ async def get(user_id: str) -> int:
 
     counter: Optional[Counter] = await db.get(Counter, user_id=user_id)
     if counter is None:
-        raise EndpointException(status.HTTP_404_NOT_FOUND, "counter_not_found")
+        raise CounterNotFoundException
 
     return counter.value
 
 
-@counter_collection.endpoint()
-async def increment(user_id: str) -> dict:
+@counter_collection.endpoint(responses=responses(ValueChangedResponse))
+async def increment(user_id: str = get_user) -> dict:
     """
     Increment the counter value
 
@@ -56,8 +59,8 @@ async def increment(user_id: str) -> dict:
     return {"old": old, "new": counter.value}
 
 
-@counter_collection.endpoint("reset")
-async def magic(user_id: str):
+@counter_collection.endpoint("reset", responses=responses(OKResponse, CounterNotFoundException))
+async def magic(user_id: str = get_user):
     """
     Reset the counter using magic
 
@@ -67,15 +70,15 @@ async def magic(user_id: str):
 
     counter: Optional[Counter] = await db.get(Counter, user_id=user_id)
     if counter is None:
-        raise EndpointException(status.HTTP_404_NOT_FOUND, "counter_not_found")
+        raise CounterNotFoundException
 
     await db.delete(counter)
 
     return True
 
 
-@counter_collection.endpoint("set")
-async def set_value(user_id: str, password: str, value: int):
+@counter_collection.endpoint("set", responses=responses(ValueChangedResponse, WrongPasswordException))
+async def set_value(password: str = Body(...), value: int = Body(...), user_id: str = get_user):
     """
     Set the counter to a specific value
 
@@ -86,7 +89,7 @@ async def set_value(user_id: str, password: str, value: int):
     """
 
     if password != "S3cr3t":  # noqa: S105
-        raise EndpointException(status.HTTP_401_UNAUTHORIZED, "wrong_password")
+        raise WrongPasswordException
 
     if counter := await db.get(Counter, user_id=user_id):
         old = counter.value
