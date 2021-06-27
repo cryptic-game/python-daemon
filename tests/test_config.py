@@ -22,7 +22,7 @@ class TestConfig(TestCase):
 
         for key, default in [
             ("API_TOKEN", None),
-            ("HOST", "0.0.0.0"),
+            ("HOST", "0.0.0.0"),  # noqa: S104
             ("PORT", 8000),
             ("DEBUG", False),
             ("SQL_SERVER_LOCATION", "postgresql://localhost:5432"),

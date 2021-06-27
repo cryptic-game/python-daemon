@@ -85,7 +85,7 @@ async def set_value(user_id: str, password: str, value: int):
     :return: True
     """
 
-    if password != "S3cr3t":
+    if password != "S3cr3t":  # noqa: S105
         raise EndpointException(status.HTTP_401_UNAUTHORIZED, "wrong_password")
 
     if counter := await db.get(Counter, user_id=user_id):
