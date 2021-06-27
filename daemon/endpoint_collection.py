@@ -104,7 +104,13 @@ class Endpoint:
 
         model = self._model
 
-        @app.post(self.path, dependencies=[Depends(HTTPAuthorization())])
+        @app.post(
+            self.path,
+            name=self.path.lstrip("/").lower(),
+            tags=[self._collection.name],
+            description=self.description["description"],
+            dependencies=[Depends(HTTPAuthorization())],
+        )
         async def inner(params: model):
             """
             Wrapper function of all daemon endpoints
@@ -139,6 +145,10 @@ class EndpointCollection:
         self._name: str = name
         self._description: str = description
         self._endpoints: Dict[str, Endpoint] = {}
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     @property
     def path(self) -> str:

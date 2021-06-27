@@ -11,7 +11,7 @@ from endpoints import register_collections
 # create fastapi app and register endpoint collections
 from environment import SQL_CREATE_TABLES
 
-app = FastAPI()
+app = FastAPI(title="Python Daemon")
 endpoints: list[dict] = register_collections(app)
 
 
@@ -31,7 +31,7 @@ async def on_startup():
         await db.create_tables()
 
 
-@app.get("/daemon/endpoints", dependencies=[Depends(HTTPAuthorization())])
+@app.get("/daemon/endpoints", name="List Daemon Endpoints", dependencies=[Depends(HTTPAuthorization())])
 async def daemon_endpoints():
     """
     Daemon info endpoint for the server
@@ -77,7 +77,7 @@ async def handle_internal_server_error(*_):
     return _make_exception(status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@app.get("/{_:path}")
+@app.get("/{_:path}", include_in_schema=False)
 async def handle_not_found():
     """Handle Not Found exceptions"""
 
