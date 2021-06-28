@@ -1,19 +1,12 @@
 from typing import Optional
 
-from fastapi import Body
-
 from endpoint_collection import EndpointCollection, get_user
 
 device_collection = EndpointCollection("device", "some device endpoints")
 
 
 @device_collection.endpoint("info")
-async def device_info(
-    foo: str = Body(...),
-    bar: int = Body(...),
-    test: Optional[str] = Body(...),
-    user_id: str = get_user,
-):
+async def device_info(foo: str, bar: int, test: Optional[str], user_id: str = get_user):
     """
     Test endpoint
 

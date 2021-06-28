@@ -1,7 +1,5 @@
 from typing import Optional
 
-from fastapi import Body
-
 from database import db
 from endpoint_collection import EndpointCollection, get_user
 from exceptions.counter import CounterNotFoundException, WrongPasswordException
@@ -78,7 +76,7 @@ async def magic(user_id: str = get_user):
 
 
 @counter_collection.endpoint("set", responses=responses(ValueChangedResponse, WrongPasswordException))
-async def set_value(password: str = Body(...), value: int = Body(...), user_id: str = get_user):
+async def set_value(password: str, value: int, user_id: str = get_user):
     """
     Set the counter to a specific value
 

@@ -27,6 +27,15 @@ def format_docs(func):
     return func
 
 
+def default_parameter(default):
+    def deco(func):
+        prev = func.__defaults__ or ()
+        func.__defaults__ = (default,) * (func.__code__.co_argcount - len(prev)) + prev
+        return func
+
+    return deco
+
+
 class EndpointCollection(APIRouter):
     """Collection of daemon endpoints"""
 
@@ -53,7 +62,9 @@ class EndpointCollection(APIRouter):
             doc = "\n".join(line.strip() for line in func.__doc__.splitlines())
             self._endpoints.append(Endpoint(_name, doc))
 
-            return self.post(f"/{_name}", *args, **kwargs)(format_docs(func))
+            func = format_docs(func)
+            func = default_parameter(Body(...))(func)
+            return self.post(f"/{_name}", *args, **kwargs)(func)
 
         return deco(name) if isinstance(name, FunctionType) else deco
 
