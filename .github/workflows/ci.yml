@@ -270,7 +270,7 @@ jobs:
         uses: docker/login-action@v1.9.0
         env:
           USERNAME: ${{ github.repository_owner }}
-          PASSWORD: ${{ secrets.CR_PAT }}
+          PASSWORD: ${{ secrets.github_token }}
         with:
           registry: ghcr.io
           username: ${{ env.USERNAME }}
@@ -293,7 +293,7 @@ jobs:
 
       - name: Prune old Docker Images
         env:
-          TOKEN: ${{ secrets.CR_PAT }}
+          TOKEN: ${{ secrets.github_token }}
           USER: "orgs/cryptic-game"
           NAME: "python-daemon"
         run: |
