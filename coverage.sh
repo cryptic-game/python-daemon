@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if PYTHONPATH=daemon coverage run --source=daemon -m unittest discover -v tests
+if PYTHONWARNINGS=ignore PYTHONPATH=daemon coverage run --source=daemon -m unittest discover -v tests
 then
     coverage xml
     coverage report
