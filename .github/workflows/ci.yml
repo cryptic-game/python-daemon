@@ -192,6 +192,7 @@ jobs:
           elif [[ $GITHUB_REF = refs/heads/* ]]; then
             tags="$branch"
             if [[ $branch == develop ]]; then
+              tags="$tags edge"
               hub=1
             fi
           elif [[ $GITHUB_REF = refs/pull/* ]]; then
