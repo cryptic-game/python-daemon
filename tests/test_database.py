@@ -103,7 +103,16 @@ class TestDatabase(IsolatedAsyncioTestCase):
         echo = MagicMock()
 
         result = database.database.DB(
-            driver, host, port, db, username, password, pool_recycle, pool_size, max_overflow, echo
+            driver,
+            host,
+            port,
+            db,
+            username,
+            password,
+            pool_recycle,
+            pool_size,
+            max_overflow,
+            echo,
         )
 
         url_create_patch.assert_called_once_with(
