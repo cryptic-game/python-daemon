@@ -26,6 +26,7 @@ black = "==20.8b1"
 flake8 = "*"
 wemake-python-styleguide = "*"
 coverage = {extras = ["toml"], version = "*"}
+mypy = "*"
 
 [scripts]
 daemon = "sh daemon.sh"
@@ -34,3 +35,4 @@ black = "black -l 120 ."
 flake8 = "flake8 daemon --count --statistics --show-source"
 test = "sh test.sh"
 coverage = "sh coverage.sh"
+mypy = "mypy ."
