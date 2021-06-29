@@ -33,6 +33,29 @@ jobs:
       - name: Check code formatting with black
         run: black -l 120 . --diff --check
 
+  type-checker:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install mypy
+        run: |
+          pip install --upgrade pip
+          pip install mypy
+
+      - name: Check typing with mypy
+        run: mypy .
+
   linter:
     runs-on: ubuntu-latest
 
@@ -249,7 +272,7 @@ jobs:
 
   docker_push:
     if: ${{ github.event_name != 'pull_request' && github.actor != 'dependabot[bot]' }}
-    needs: [ codestyle, linter, tests, docs_build, docker_build ]
+    needs: [ codestyle, type-checker, linter, tests, docs_build, docker_build ]
     runs-on: ubuntu-latest
 
     steps:
