@@ -8,11 +8,15 @@ class TestEndpoints(TestCase):
     @patch("endpoints.ENDPOINT_COLLECTIONS")
     def test__register_collections(self, endpoint_collections_patch):
         app = MagicMock()
-        endpoint_collections_patch.__iter__.return_value = collections = [MagicMock() for _ in range(5)]
+        collections = []
+        for i in range(5):
+            collections.append(collection := MagicMock())
+            collection.register.return_value = MagicMock() if i % 2 else None
+        endpoint_collections_patch.__iter__.return_value = collections
 
         result = endpoints.register_collections(app)
 
         for collection in collections:
             collection.register.assert_called_once_with(app)
 
-        self.assertEqual([collection.register(app) for collection in collections], result)
+        self.assertEqual([collection.register(app) for collection in collections[1::2]], result)

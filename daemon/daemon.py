@@ -37,6 +37,7 @@ async def on_startup():
 @app.get(
     "/daemon/endpoints",
     name="List Daemon Endpoints",
+    tags=["daemon"],
     dependencies=[Depends(HTTPAuthorization())],
     responses=responses(list[EndpointCollectionModel]),
 )

@@ -8,7 +8,7 @@ from schemas.counter import ValueResponse, ValueChangedResponse
 from schemas.ok import OKResponse
 from utils import responses
 
-counter_collection = EndpointCollection("counter", "test endpoints")
+counter_collection = EndpointCollection("counter", "test endpoints", test=True)
 
 
 @counter_collection.endpoint

@@ -7,6 +7,7 @@ from fastapi import FastAPI, Depends, APIRouter, Body
 from pydantic import UUID4
 
 from authorization import HTTPAuthorization
+from environment import DEBUG
 
 Endpoint = namedtuple("Endpoint", ["name", "description"])
 
@@ -43,22 +44,35 @@ async def get_user(user_id: UUID4) -> str:
 class EndpointCollection(APIRouter):
     """Collection of daemon endpoints"""
 
-    def __init__(self, name: str, description: str):
-        super().__init__(prefix=f"/{name}", tags=[name], dependencies=[Depends(HTTPAuthorization())])
+    def __init__(self, name: str, description: str, *, disabled: bool = False, test: bool = False):
+        tag = name
+        if test:
+            tag = f"[TEST] {tag}"
+
+        super().__init__(prefix=f"/{name}", tags=[tag], dependencies=[Depends(HTTPAuthorization())])
 
         self._name: str = name
         self._description: str = description
+        self._test: bool = test
+        self._disabled: bool = disabled or test and not DEBUG
         self._endpoints: list[Endpoint] = []
 
-    def endpoint(self, name: Optional[str] = None, *args, **kwargs):
+    def endpoint(self, name: Optional[str] = None, *args, disabled: bool = False, test: bool = False, **kwargs):
         """
         Register a new endpoint in this collection.
 
         :param name: name of the endpoint
+        :param disabled: whether this endpoint is disabled or not
+        :param test: whether this endpoint is only for testing
         """
+
+        test = test or self._test
 
         def deco(func):
             """Decorator for endpoint registration"""
+
+            if disabled or test and not DEBUG:
+                return func
 
             # use the function name if no other name is provided
             _name = name if isinstance(name, str) else func.__name__
@@ -68,7 +82,7 @@ class EndpointCollection(APIRouter):
 
             func = format_docs(func)
             func = default_parameter(Body(...))(func)
-            return self.post(f"/{_name}", *args, **kwargs)(func)
+            return self.post(f"/{_name}", name="[TEST] " * test + func.__name__, *args, **kwargs)(func)
 
         return deco(name) if isinstance(name, FunctionType) else deco
 
@@ -80,13 +94,16 @@ class EndpointCollection(APIRouter):
     def description(self) -> str:
         return self._description
 
-    def register(self, app: FastAPI) -> dict:
+    def register(self, app: FastAPI) -> Optional[dict]:
         """
         Register this endpoint collection in the FastAPI app
 
         :param app: the FastAPI app
         :return: the endpoint collection description for the `/daemon/endpoints` endpoint
         """
+
+        if self._disabled:
+            return None
 
         app.include_router(self)
 
