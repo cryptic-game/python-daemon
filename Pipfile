@@ -31,6 +31,6 @@ coverage = {extras = ["toml"], version = "*"}
 daemon = "sh daemon.sh"
 docs = "sh docs.sh"
 black = "black -l 120 ."
-flake8 = "flake8 daemon --count --statistics --show-source"
+flake8 = "flake8 . --count --statistics --show-source"
 test = "sh test.sh"
 coverage = "sh coverage.sh"

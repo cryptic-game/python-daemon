@@ -1,6 +1,5 @@
 from asyncio import Event
 from contextvars import ContextVar
-from functools import partial
 from typing import TypeVar, Optional, Type
 
 # noinspection PyProtectedMember
@@ -130,7 +129,7 @@ class DB:
 
         logger.debug("creating tables")
         async with self.engine.begin() as conn:
-            await conn.run_sync(partial(self.Base.metadata.create_all))
+            await conn.run_sync(self.Base.metadata.create_all)
 
     async def add(self, obj: T) -> T:
         """
