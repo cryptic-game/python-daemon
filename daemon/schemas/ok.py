@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from utils import example
+from ..utils import example
 
 
 class OKResponse(BaseModel):

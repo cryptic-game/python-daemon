@@ -3,6 +3,6 @@
 set -ex
 
 mkdir -p build
-PYTHONPATH=daemon DEBUG=1 python -c 'from daemon import app;import json;print(json.dumps(app.openapi()))' | tee build/spec
+DEBUG=1 python -c 'from daemon.daemon import app;import json;print(json.dumps(app.openapi()))' | tee build/spec
 docker build -t redoc-cli github.com/Redocly/redoc#:cli
 docker run --rm -v $(pwd)/build:/build redoc-cli bundle /build/spec -o /build/docs.html

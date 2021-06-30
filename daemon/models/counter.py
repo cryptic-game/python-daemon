@@ -2,7 +2,7 @@ from typing import Union
 
 from sqlalchemy import Column, String, Integer
 
-from database import db
+from ..database import db
 
 
 class Counter(db.Base):

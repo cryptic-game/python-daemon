@@ -6,8 +6,8 @@ from typing import Optional
 from fastapi import FastAPI, Depends, APIRouter, Body
 from pydantic import UUID4
 
-from authorization import HTTPAuthorization
-from environment import DEBUG
+from .authorization import HTTPAuthorization
+from .environment import DEBUG
 
 Endpoint = namedtuple("Endpoint", ["name", "description"])
 

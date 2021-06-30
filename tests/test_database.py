@@ -3,13 +3,13 @@ from contextvars import ContextVar
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, MagicMock, call
 
-import database
+from daemon import database
 from _utils import mock_list, mock_dict, AsyncMock
 from tests._utils import import_module
 
 
 class TestDatabase(IsolatedAsyncioTestCase):
-    @patch("database.database.sa_select")
+    @patch("daemon.database.database.sa_select")
     async def test__select__no_args(self, sa_select_patch: MagicMock):
         entity = MagicMock()
 
@@ -18,8 +18,8 @@ class TestDatabase(IsolatedAsyncioTestCase):
         sa_select_patch.assert_called_once_with(entity)
         self.assertEqual(sa_select_patch(), result)
 
-    @patch("database.database.selectinload")
-    @patch("database.database.sa_select")
+    @patch("daemon.database.database.selectinload")
+    @patch("daemon.database.database.sa_select")
     async def test__select__with_args(self, sa_select_patch: MagicMock, selectinload_patch: MagicMock):
         entity = MagicMock()
 
@@ -51,7 +51,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         )
         self.assertEqual(sa_select_patch().options(), result)
 
-    @patch("database.database.select")
+    @patch("daemon.database.database.select")
     async def test__filter_by(self, select_patch: MagicMock):
         cls = MagicMock()
         args = mock_list(5)
@@ -63,7 +63,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         select_patch().filter_by.assert_called_once_with(**kwargs)
         self.assertEqual(select_patch().filter_by(), result)
 
-    @patch("database.database.sa_exists")
+    @patch("daemon.database.database.sa_exists")
     async def test__exists(self, sa_exists_patch: MagicMock):
         args = mock_list(5)
         kwargs = mock_dict(5, True)
@@ -73,7 +73,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         sa_exists_patch.assert_called_once_with(*args, **kwargs)
         self.assertEqual(sa_exists_patch(), result)
 
-    @patch("database.database.sa_delete")
+    @patch("daemon.database.database.sa_delete")
     async def test__delete(self, sa_delete_patch: MagicMock):
         table = MagicMock()
 
@@ -82,9 +82,9 @@ class TestDatabase(IsolatedAsyncioTestCase):
         sa_delete_patch.assert_called_once_with(table)
         self.assertEqual(sa_delete_patch(), result)
 
-    @patch("database.database.declarative_base")
-    @patch("database.database.URL.create")
-    @patch("database.database.create_async_engine")
+    @patch("daemon.database.database.declarative_base")
+    @patch("daemon.database.database.URL.create")
+    @patch("daemon.database.database.create_async_engine")
     async def test__constructor(
         self,
         create_async_engine_patch: MagicMock,
@@ -144,7 +144,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         self.assertEqual("close_event", result._close_event.name)
         self.assertEqual(None, result._close_event.get())
 
-    @patch("database.database.logger.debug")
+    @patch("daemon.database.database.logger.debug")
     async def test__create_tables(self, logger_debug_patch: MagicMock):
         db = MagicMock()
 
@@ -241,7 +241,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         (await db.exec()).scalar.assert_called_once_with()
         self.assertEqual((await db.exec()).scalar(), result)
 
-    @patch("database.database.exists")
+    @patch("daemon.database.database.exists")
     async def test__db__exists(self, exists_patch: MagicMock):
         db = AsyncMock()
         args = mock_list(5)
@@ -254,8 +254,8 @@ class TestDatabase(IsolatedAsyncioTestCase):
         db.first.assert_called_once_with(exists_patch().select())
         self.assertEqual(db.first(exists_patch().select()), result)
 
-    @patch("database.database.count")
-    @patch("database.database.select")
+    @patch("daemon.database.database.count")
+    @patch("daemon.database.database.select")
     async def test__db__count(self, select_patch: MagicMock, count_patch: MagicMock):
         db = AsyncMock()
         args = mock_list(5)
@@ -269,7 +269,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         db.first.assert_called_once_with(select_patch().select_from())
         self.assertEqual(db.first(), result)
 
-    @patch("database.database.filter_by")
+    @patch("daemon.database.database.filter_by")
     async def test__get(self, filter_by_patch: MagicMock):
         db = AsyncMock()
         args = mock_list(5)
@@ -324,8 +324,8 @@ class TestDatabase(IsolatedAsyncioTestCase):
         db._close_event.get.assert_called_once_with()
         db._close_event.get().set.assert_called_once_with()
 
-    @patch("database.database.Event")
-    @patch("database.database.AsyncSession")
+    @patch("daemon.database.database.Event")
+    @patch("daemon.database.database.AsyncSession")
     async def test__create_session(self, asyncsession_patch: MagicMock, event_patch: MagicMock):
         db = MagicMock()
 
@@ -355,17 +355,17 @@ class TestDatabase(IsolatedAsyncioTestCase):
         db._close_event.get.assert_called_once_with()
         db._close_event.get().wait.assert_called_once_with()
 
-    @patch("database.database.SQL_SHOW_STATEMENTS")
-    @patch("database.database.MAX_OVERFLOW")
-    @patch("database.database.POOL_SIZE")
-    @patch("database.database.POOL_RECYCLE")
-    @patch("database.database.DB_PASSWORD")
-    @patch("database.database.DB_USERNAME")
-    @patch("database.database.DB_DATABASE")
-    @patch("database.database.DB_PORT")
-    @patch("database.database.DB_HOST")
-    @patch("database.database.DB_DRIVER")
-    @patch("database.database.DB")
+    @patch("daemon.database.database.SQL_SHOW_STATEMENTS")
+    @patch("daemon.database.database.MAX_OVERFLOW")
+    @patch("daemon.database.database.POOL_SIZE")
+    @patch("daemon.database.database.POOL_RECYCLE")
+    @patch("daemon.database.database.DB_PASSWORD")
+    @patch("daemon.database.database.DB_USERNAME")
+    @patch("daemon.database.database.DB_DATABASE")
+    @patch("daemon.database.database.DB_PORT")
+    @patch("daemon.database.database.DB_HOST")
+    @patch("daemon.database.database.DB_DRIVER")
+    @patch("daemon.database.database.DB")
     async def test__get_database(
         self,
         db_patch: MagicMock,
@@ -396,7 +396,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         )
         self.assertEqual(result, db_patch())
 
-    @patch("database.db")
+    @patch("daemon.database.db")
     async def test__db_context(self, db_patch: MagicMock):
         db_patch.commit = AsyncMock()
         db_patch.close = AsyncMock()
@@ -407,7 +407,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
 
         db_patch.close.assert_called_once_with()
 
-    @patch("database.db_context")
+    @patch("daemon.database.db_context")
     async def test__db_wrapper(self, db_context_patch: MagicMock):
         events = []
         args = mock_list(5)
@@ -440,7 +440,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         old_get_database = database.database.get_database
         get_database_mock = database.database.get_database = MagicMock()
 
-        db = import_module("database")
+        db = import_module("daemon.database")
 
         get_database_mock.assert_called_once_with()
         database.get_database = old_get_database

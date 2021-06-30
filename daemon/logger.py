@@ -8,7 +8,7 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from sentry_sdk.integrations.logging import LoggingIntegration, ignore_logger
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-from environment import LOG_LEVEL
+from .environment import LOG_LEVEL
 
 
 def setup_sentry(app: FastAPI, dsn: str, name: str, version: str):

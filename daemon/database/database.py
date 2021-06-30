@@ -13,7 +13,7 @@ from sqlalchemy.sql.expression import exists as sa_exists, delete as sa_delete, 
 from sqlalchemy.sql.functions import count
 from sqlalchemy.sql.selectable import Exists
 
-from environment import (
+from ..environment import (
     DB_DRIVER,
     DB_HOST,
     DB_PORT,
@@ -25,7 +25,7 @@ from environment import (
     POOL_SIZE,
     MAX_OVERFLOW,
 )
-from logger import get_logger
+from ..logger import get_logger
 
 T = TypeVar("T")
 
