@@ -17,4 +17,4 @@ def register_collections(app: FastAPI) -> list[dict]:
     :return: a list of dicts containing information about all endpoints and endpoint collections
     """
 
-    return [collection.register(app) for collection in ENDPOINT_COLLECTIONS]
+    return [description for collection in ENDPOINT_COLLECTIONS if (description := collection.register(app))]
