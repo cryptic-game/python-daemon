@@ -11,11 +11,6 @@ from authorization import HTTPAuthorization
 Endpoint = namedtuple("Endpoint", ["name", "description"])
 
 
-@Depends
-async def get_user(user_id: UUID4 = Body(...)) -> str:
-    return str(user_id)
-
-
 def format_docs(func):
     doc = "\n".join(line.strip() for line in func.__doc__.splitlines()).replace(
         "\n\n:param",
@@ -34,6 +29,15 @@ def default_parameter(default):
         return func
 
     return deco
+
+
+def dependency(f):
+    return Depends(default_parameter(Body(...))(f))
+
+
+@dependency
+async def get_user(user_id: UUID4) -> str:
+    return str(user_id)
 
 
 class EndpointCollection(APIRouter):
