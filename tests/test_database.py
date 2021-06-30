@@ -1,11 +1,11 @@
 from contextlib import asynccontextmanager
 from contextvars import ContextVar
-from importlib import machinery, util
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, MagicMock, call
 
 import database
 from _utils import mock_list, mock_dict, AsyncMock
+from tests._utils import import_module
 
 
 class TestDatabase(IsolatedAsyncioTestCase):
@@ -440,7 +440,7 @@ class TestDatabase(IsolatedAsyncioTestCase):
         old_get_database = database.database.get_database
         get_database_mock = database.database.get_database = MagicMock()
 
-        db = machinery.SourceFileLoader("database", util.find_spec("database").origin).load_module("database")
+        db = import_module("database")
 
         get_database_mock.assert_called_once_with()
         database.get_database = old_get_database
