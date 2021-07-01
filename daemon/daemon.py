@@ -4,14 +4,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.params import Depends
 from fastapi.responses import JSONResponse
 
-from authorization import HTTPAuthorization
-from database import db
-from endpoint_collection import format_docs
-from endpoints import register_collections
-from environment import SQL_CREATE_TABLES
-from exceptions.api_exception import APIException
-from schemas.daemon import EndpointCollectionModel
-from utils import responses
+from .authorization import HTTPAuthorization
+from .database import db
+from .endpoint_collection import format_docs
+from .endpoints import register_collections
+from .environment import SQL_CREATE_TABLES
+from .exceptions.api_exception import APIException
+from .schemas.daemon import EndpointCollectionModel
+from .utils import responses
 
 # create fastapi app and register endpoint collections
 app = FastAPI(title="Python Daemon")

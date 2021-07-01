@@ -28,7 +28,7 @@ wemake-python-styleguide = "*"
 coverage = {extras = ["toml"], version = "*"}
 
 [scripts]
-daemon = "sh daemon.sh"
+daemon = "python -m daemon"
 docs = "sh docs.sh"
 black = "black -l 120 ."
 flake8 = "flake8 . --count --statistics --show-source"

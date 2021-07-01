@@ -3,18 +3,18 @@ from logging import Formatter, PercentStyle, StreamHandler
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, MagicMock
 
-import logger
+from daemon import logger
 from tests._utils import mock_list
 
 
 class TestLogger(IsolatedAsyncioTestCase):
-    @patch("logger.SentryAsgiMiddleware")
-    @patch("logger.ignore_logger")
-    @patch("logger.LoggingIntegration")
-    @patch("logger.SqlalchemyIntegration")
-    @patch("logger.AioHttpIntegration")
-    @patch("logger.logging")
-    @patch("logger.sentry_sdk.init")
+    @patch("daemon.logger.SentryAsgiMiddleware")
+    @patch("daemon.logger.ignore_logger")
+    @patch("daemon.logger.LoggingIntegration")
+    @patch("daemon.logger.SqlalchemyIntegration")
+    @patch("daemon.logger.AioHttpIntegration")
+    @patch("daemon.logger.logging")
+    @patch("daemon.logger.sentry_sdk.init")
     async def test__setup_sentry(
         self,
         sentry_sdk_init_patch: MagicMock,
@@ -52,9 +52,9 @@ class TestLogger(IsolatedAsyncioTestCase):
         self.assertIs(sys.__stdout__, logger.logging_handler.stream)
         self.assertIs(logger.logging_formatter, logger.logging_handler.formatter)
 
-    @patch("logger.LOG_LEVEL")
-    @patch("logger.logging_handler")
-    @patch("logger.logging.getLogger")
+    @patch("daemon.logger.LOG_LEVEL")
+    @patch("daemon.logger.logging_handler")
+    @patch("daemon.logger.logging.getLogger")
     async def test__get_logger(
         self,
         getlogger_patch: MagicMock,

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from utils import example, get_example
+from ..utils import example, get_example
 
 
 class EndpointModel(BaseModel):

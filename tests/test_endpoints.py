@@ -1,11 +1,11 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
-import endpoints
+from daemon import endpoints
 
 
 class TestEndpoints(TestCase):
-    @patch("endpoints.ENDPOINT_COLLECTIONS")
+    @patch("daemon.endpoints.ENDPOINT_COLLECTIONS")
     def test__register_collections(self, endpoint_collections_patch):
         app = MagicMock()
         collections = []

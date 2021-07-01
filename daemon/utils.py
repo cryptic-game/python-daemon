@@ -3,7 +3,7 @@ from typing import Type, Union
 from pydantic import BaseModel
 from uvicorn.protocols.http.h11_impl import STATUS_PHRASES
 
-from exceptions.api_exception import APIException
+from .exceptions.api_exception import APIException
 
 
 def responses(default: Type[Union[BaseModel, list]], *args: Type[APIException]) -> dict:

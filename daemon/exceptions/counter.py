@@ -1,6 +1,6 @@
 from starlette import status
 
-from exceptions.api_exception import APIException
+from .api_exception import APIException
 
 
 class CounterNotFoundException(APIException):

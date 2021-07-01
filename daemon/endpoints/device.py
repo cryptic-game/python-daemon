@@ -1,6 +1,6 @@
 from typing import Optional
 
-from endpoint_collection import EndpointCollection, get_user
+from ..endpoint_collection import EndpointCollection, get_user
 
 device_collection = EndpointCollection("device", "some device endpoints")
 

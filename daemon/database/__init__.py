@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from functools import wraps
 
-from database.database import get_database
+from .database import get_database
 
 
 @asynccontextmanager

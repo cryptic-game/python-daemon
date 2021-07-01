@@ -36,7 +36,6 @@ EXPOSE 8000
 
 COPY --from=builder /build/.venv/lib /usr/local/lib
 
-COPY daemon.sh /app/
 COPY daemon /app/daemon/
 
-ENTRYPOINT /app/daemon.sh
+CMD ["python", "-m", "daemon"]

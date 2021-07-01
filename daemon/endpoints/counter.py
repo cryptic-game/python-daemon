@@ -1,12 +1,12 @@
 from typing import Optional
 
-from database import db
-from endpoint_collection import EndpointCollection, get_user
-from exceptions.counter import CounterNotFoundException, WrongPasswordException
-from models.counter import Counter
-from schemas.counter import ValueResponse, ValueChangedResponse
-from schemas.ok import OKResponse
-from utils import responses
+from ..database import db
+from ..endpoint_collection import EndpointCollection, get_user
+from ..exceptions.counter import CounterNotFoundException, WrongPasswordException
+from ..models.counter import Counter
+from ..schemas.counter import ValueResponse, ValueChangedResponse
+from ..schemas.ok import OKResponse
+from ..utils import responses
 
 counter_collection = EndpointCollection("counter", "test endpoints", test=True)
 

@@ -2,9 +2,9 @@ import sys
 
 import uvicorn
 
-from daemon import app
-from environment import SENTRY_DSN, API_TOKEN, DEBUG, HOST, PORT, RELOAD
-from logger import get_logger, setup_sentry
+from .daemon import app
+from .environment import SENTRY_DSN, API_TOKEN, DEBUG, HOST, PORT, RELOAD
+from .logger import get_logger, setup_sentry
 
 logger = get_logger(__name__)
 get_logger("uvicorn")
@@ -26,18 +26,14 @@ def check_api_token():
 def run_daemon():
     """Run the uvicorn http server"""
 
-    uvicorn.run("daemon:app", host=HOST, port=PORT, reload=RELOAD, log_config=None)
+    uvicorn.run("daemon.daemon:app", host=HOST, port=PORT, reload=RELOAD, log_config=None)
 
 
 def main():
     """Main function of the Python Daemon"""
 
     if SENTRY_DSN:
-        setup_sentry(app, SENTRY_DSN, "python-daemon", "0.0.1")
+        setup_sentry(app, SENTRY_DSN, "python-daemon", "0.1.0")
 
     check_api_token()
     run_daemon()
-
-
-if __name__ == "__main__":
-    main()
