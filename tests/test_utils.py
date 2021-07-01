@@ -1,7 +1,8 @@
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from daemon import utils
+from tests._utils import mock_dict
 
 
 class TestUtils(IsolatedAsyncioTestCase):
@@ -68,3 +69,27 @@ class TestUtils(IsolatedAsyncioTestCase):
         result = utils.get_example(arg)
 
         self.assertEqual(expected, result)
+
+    @patch("daemon.utils.get_example")
+    async def test__example(self, get_example_patch: MagicMock):
+        args = [a := MagicMock(), b := MagicMock()]
+        get_example_patch.side_effect = lambda x: MagicMock(
+            items=lambda: [(x.first.key, x.first.value), (x.second.key, x.second.value)],
+        )
+        kwargs = mock_dict(5, True)
+
+        result = utils.example(*args, **kwargs)
+
+        # noinspection PyUnresolvedReferences
+        self.assertEqual(
+            {
+                "example": {
+                    a.first.key: a.first.value,
+                    a.second.key: a.second.value,
+                    b.first.key: b.first.value,
+                    b.second.key: b.second.value,
+                    **kwargs,
+                },
+            },
+            result.schema_extra,
+        )
