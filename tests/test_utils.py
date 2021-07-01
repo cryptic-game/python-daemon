@@ -60,3 +60,11 @@ class TestUtils(IsolatedAsyncioTestCase):
             },
             result,
         )
+
+    async def test__get_example(self):
+        arg = MagicMock()
+        arg.Config.schema_extra = {"example": (expected := MagicMock())}
+
+        result = utils.get_example(arg)
+
+        self.assertEqual(expected, result)
