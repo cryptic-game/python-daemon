@@ -13,7 +13,7 @@ Endpoint = namedtuple("Endpoint", ["name", "description"])
 
 
 def format_docs(func):
-    doc = "\n".join(line.strip() for line in func.__doc__.splitlines()).replace(
+    doc = "\n".join(line.strip() for line in func.__doc__.strip().splitlines()).replace(
         "\n\n:param",
         "\n\n**Parameters:**\n:param",
     )
