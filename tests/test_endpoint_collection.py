@@ -1,6 +1,8 @@
+import itertools
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import MagicMock, patch
 
+from fastapi import APIRouter
 from fastapi.params import Depends
 
 from daemon import endpoint_collection
@@ -70,3 +72,43 @@ class TestEndpointCollection(IsolatedAsyncioTestCase):
         str_patch.assert_called_once_with(user_id)
         self.assertEqual(str_patch(), result)
         self.assertIsInstance(endpoint_collection.get_user, Depends)
+
+    @patch("daemon.endpoint_collection.HTTPAuthorization")
+    @patch("daemon.endpoint_collection.Depends")
+    @patch("daemon.endpoint_collection.super")
+    async def test__constructor(
+        self,
+        super_patch: MagicMock,
+        depends_patch: MagicMock,
+        httpauthorization_patch: MagicMock,
+    ):
+        super_patch.return_value = type("", (), {"__init__": MagicMock(return_value=None)})
+
+        self.assertTrue(issubclass(endpoint_collection.EndpointCollection, APIRouter))
+
+        for disabled, test, debug in itertools.product([False, True], repeat=3):
+            super_patch().__init__.reset_mock()
+            super_patch.reset_mock()
+            httpauthorization_patch.reset_mock()
+            depends_patch.reset_mock()
+
+            with self.subTest(disabled=disabled, test=test, debug=debug):
+                name = MagicMock()
+                description = MagicMock()
+                endpoint_collection.DEBUG = debug
+
+                result = endpoint_collection.EndpointCollection(name, description, disabled=disabled, test=test)
+
+                httpauthorization_patch.assert_called_once_with()
+                depends_patch.assert_called_once_with(httpauthorization_patch())
+                super_patch.assert_called_once_with()
+                super_patch().__init__.assert_called_once_with(
+                    prefix=f"/{name}",
+                    tags=[f"[TEST] {name}" if test else name],
+                    dependencies=[depends_patch()],
+                )
+                self.assertEqual(name, result._name)
+                self.assertEqual(description, result._description)
+                self.assertEqual(test, result._test)
+                self.assertEqual(disabled or test and not debug, result._disabled)
+                self.assertEqual([], result._endpoints)
