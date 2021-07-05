@@ -5,6 +5,20 @@ from tests._utils import import_module, AsyncMock
 
 
 class TestDaemon(IsolatedAsyncioTestCase):
+    def get_decorated_function(self, fastapi_patch: MagicMock, decorator_name, *decorator_args, **decorator_kwargs):
+        functions = []
+        decorator = MagicMock(side_effect=functions.append)
+        getattr(fastapi_patch(), decorator_name).side_effect = (
+            lambda *args, **kwargs: decorator if (args, kwargs) == (decorator_args, decorator_kwargs) else MagicMock()
+        )
+        fastapi_patch.reset_mock()
+
+        module = import_module("daemon.daemon")
+
+        decorator.assert_called_once()
+        self.assertEqual(1, len(functions))
+        return module, functions[0]
+
     @patch("daemon.endpoints.register_collections")
     @patch("fastapi.FastAPI")
     async def test__global_vars(self, fastapi_patch: MagicMock, register_collections_patch: MagicMock):
@@ -18,15 +32,7 @@ class TestDaemon(IsolatedAsyncioTestCase):
     @patch("daemon.database.db")
     @patch("fastapi.FastAPI")
     async def test__db_session(self, fastapi_patch: MagicMock, db_patch: MagicMock):
-        functions = []
-        fastapi_patch().middleware().side_effect = functions.append
-        fastapi_patch.reset_mock()
-
-        import_module("daemon.daemon")
-
-        fastapi_patch().middleware.assert_called_once_with("http")
-        self.assertEqual(1, len(functions))
-        (db_session,) = functions
+        _, db_session = self.get_decorated_function(fastapi_patch, "middleware", "http")
 
         events = []
         db_patch.create_session.side_effect = lambda: events.append(0)
@@ -41,3 +47,25 @@ class TestDaemon(IsolatedAsyncioTestCase):
         self.assertEqual([0, 1, 2, 3], events)
         call_next.assert_called_once_with(request)
         self.assertEqual(expected, result)
+
+    @patch("fastapi.FastAPI")
+    async def test__on_startup__no_tables(self, fastapi_patch: MagicMock):
+        module, on_startup = self.get_decorated_function(fastapi_patch, "on_event", "startup")
+
+        module.SQL_CREATE_TABLES = False
+        db = module.db = AsyncMock()
+
+        await on_startup()
+
+        db.create_tables.assert_not_called()
+
+    @patch("fastapi.FastAPI")
+    async def test__on_startup__create_tables(self, fastapi_patch: MagicMock):
+        module, on_startup = self.get_decorated_function(fastapi_patch, "on_event", "startup")
+
+        module.SQL_CREATE_TABLES = True
+        db = module.db = AsyncMock()
+
+        await on_startup()
+
+        db.create_tables.assert_called_once_with()
