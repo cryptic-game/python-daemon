@@ -69,3 +69,37 @@ class TestDaemon(IsolatedAsyncioTestCase):
         await on_startup()
 
         db.create_tables.assert_called_once_with()
+
+    @patch("daemon.endpoint_collection.format_docs")
+    @patch("daemon.schemas.daemon.EndpointCollectionModel")
+    @patch("daemon.utils.responses")
+    @patch("daemon.authorization.HTTPAuthorization")
+    @patch("fastapi.params.Depends")
+    @patch("fastapi.FastAPI")
+    async def test__daemon_endpoints(
+        self,
+        fastapi_patch: MagicMock,
+        depends_patch: MagicMock,
+        httpauthorization_patch: MagicMock,
+        responses_patch: MagicMock,
+        endpoint_collection_model_patch: MagicMock,
+        format_docs_patch: MagicMock,
+    ):
+        format_docs_patch.side_effect = lambda f: setattr(f, "docs_formatted", True) or f  # noqa: B010
+        module, daemon_endpoints = self.get_decorated_function(
+            fastapi_patch,
+            "get",
+            "/daemon/endpoints",
+            name="List Daemon Endpoints",
+            tags=["daemon"],
+            dependencies=[[depends_patch(), depends_patch.reset_mock()][0]],
+            responses=[responses_patch(), responses_patch.reset_mock()][0],
+        )
+
+        httpauthorization_patch.assert_called_once_with()
+        depends_patch.assert_called_once_with(httpauthorization_patch())
+        responses_patch.assert_called_once_with(list[endpoint_collection_model_patch])
+        self.assertEqual(True, daemon_endpoints.docs_formatted)
+
+        module.endpoints = MagicMock()
+        self.assertEqual(module.endpoints, await daemon_endpoints())
