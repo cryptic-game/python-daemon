@@ -1,6 +1,8 @@
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import MagicMock, patch
 
+from fastapi.params import Depends
+
 from daemon import endpoint_collection
 
 
@@ -58,3 +60,13 @@ class TestEndpointCollection(IsolatedAsyncioTestCase):
         default_parameter_patch().assert_called_once_with(f)
         depends_patch.assert_called_once_with(default_parameter_patch()())
         self.assertEqual(depends_patch(), result)
+
+    @patch("daemon.endpoint_collection.str")
+    async def test__get_user(self, str_patch: MagicMock):
+        user_id = MagicMock()
+
+        result = await endpoint_collection.get_user.dependency(user_id)
+
+        str_patch.assert_called_once_with(user_id)
+        self.assertEqual(str_patch(), result)
+        self.assertIsInstance(endpoint_collection.get_user, Depends)
