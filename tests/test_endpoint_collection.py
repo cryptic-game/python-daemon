@@ -1,4 +1,5 @@
 from unittest import IsolatedAsyncioTestCase
+from unittest.mock import MagicMock
 
 from daemon import endpoint_collection
 
@@ -27,3 +28,14 @@ class TestEndpointCollection(IsolatedAsyncioTestCase):
             "**Returns:** something",
             func.__doc__,
         )
+
+    async def test__default_parameter(self):
+        default = MagicMock()
+
+        @endpoint_collection.default_parameter(default)
+        def func(foo, bar, baz, xy=42, test=True):
+            return foo, bar, baz, xy, test
+
+        result = func()
+
+        self.assertEqual((default, default, default, 42, True), result)
