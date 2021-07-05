@@ -1,6 +1,8 @@
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, MagicMock
 
+from fastapi import HTTPException
+
 from daemon import daemon
 from tests._utils import import_module, AsyncMock, mock_dict
 
@@ -119,3 +121,83 @@ class TestDaemon(IsolatedAsyncioTestCase):
             status_code,
         )
         self.assertEqual(jsonresponse_patch(), result)
+
+    @patch("daemon.exceptions.api_exception.APIException")
+    @patch("fastapi.FastAPI")
+    async def test__handle_api_exception(self, fastapi_patch: MagicMock, apiexception_patch: MagicMock):
+        _, handle_api_exception = self.get_decorated_function(fastapi_patch, "exception_handler", apiexception_patch)
+        exception = MagicMock()
+
+        result = await handle_api_exception(..., exception)
+
+        exception.make_response.assert_called_once_with()
+        self.assertEqual(exception.make_response(), result)
+
+    @patch("fastapi.exceptions.HTTPException")
+    @patch("fastapi.FastAPI")
+    async def test__handle_http_exception(self, fastapi_patch: MagicMock, httpexception_patch: MagicMock):
+        module, handle_http_exception = self.get_decorated_function(
+            fastapi_patch,
+            "exception_handler",
+            httpexception_patch,
+        )
+        exception = MagicMock()
+        _make_exception, module._make_exception = module._make_exception, MagicMock()
+
+        result = await handle_http_exception(..., exception)
+
+        module._make_exception.assert_called_once_with(exception.status_code)
+        self.assertEqual(module._make_exception(), result)
+        module._make_exception = _make_exception
+
+    @patch("fastapi.exceptions.RequestValidationError")
+    @patch("fastapi.FastAPI")
+    async def test__handle_unprocessable_entity(
+        self,
+        fastapi_patch: MagicMock,
+        request_validation_error_patch: MagicMock,
+    ):
+        module, handle_unprocessable_entity = self.get_decorated_function(
+            fastapi_patch,
+            "exception_handler",
+            request_validation_error_patch,
+        )
+        exception = MagicMock()
+        _make_exception, module._make_exception = module._make_exception, MagicMock()
+
+        result = await handle_unprocessable_entity(..., exception)
+
+        exception.errors.assert_called_once_with()
+        module._make_exception.assert_called_once_with(422, detail=exception.errors())
+        self.assertEqual(module._make_exception(), result)
+        module._make_exception = _make_exception
+
+    @patch("fastapi.FastAPI")
+    async def test__handle_internal_server_error(self, fastapi_patch: MagicMock):
+        module, handle_internal_server_error = self.get_decorated_function(
+            fastapi_patch,
+            "exception_handler",
+            Exception,
+        )
+        exception = MagicMock()
+        _make_exception, module._make_exception = module._make_exception, MagicMock()
+
+        result = await handle_internal_server_error(..., exception)
+
+        module._make_exception.assert_called_once_with(500)
+        self.assertEqual(module._make_exception(), result)
+        module._make_exception = _make_exception
+
+    @patch("fastapi.FastAPI")
+    async def test__handle_not_found(self, fastapi_patch: MagicMock):
+        module, handle_not_found = self.get_decorated_function(
+            fastapi_patch,
+            "get",
+            "/{_:path}",
+            include_in_schema=False,
+        )
+
+        with self.assertRaises(HTTPException) as context:
+            await handle_not_found()
+
+        self.assertEqual(404, context.exception.status_code)
