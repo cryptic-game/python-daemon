@@ -1,7 +1,8 @@
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, MagicMock
 
-from tests._utils import import_module, AsyncMock
+from daemon import daemon
+from tests._utils import import_module, AsyncMock, mock_dict
 
 
 class TestDaemon(IsolatedAsyncioTestCase):
@@ -103,3 +104,18 @@ class TestDaemon(IsolatedAsyncioTestCase):
 
         module.endpoints = MagicMock()
         self.assertEqual(module.endpoints, await daemon_endpoints())
+
+    @patch("daemon.daemon.JSONResponse")
+    @patch("daemon.daemon.HTTPException")
+    async def test__make_exception(self, httpexception_patch: MagicMock, jsonresponse_patch: MagicMock):
+        status_code = MagicMock()
+        kwargs = mock_dict(5, True)
+
+        result = daemon._make_exception(status_code, **kwargs)
+
+        httpexception_patch.assert_called_once_with(status_code)
+        jsonresponse_patch.assert_called_once_with(
+            {**kwargs, "error": f"{status_code} {httpexception_patch().detail}"},
+            status_code,
+        )
+        self.assertEqual(jsonresponse_patch(), result)
