@@ -47,3 +47,30 @@ class TestCounterEndpoints(IsolatedAsyncioTestCase):
 
         db_patch.get.assert_called_once_with(Counter, user_id=user_id)
         self.assertEqual({"value": mock.value}, result)
+
+    @patch("daemon.endpoints.counter.Counter")
+    @patch("daemon.endpoints.counter.db")
+    async def test__increment__not_found(self, db_patch: MagicMock, counter_patch: MagicMock):
+        user_id = MagicMock()
+        mock = MagicMock()
+        db_patch.get = AsyncMock(return_value=None)
+        db_patch.add = AsyncMock(return_value=mock)
+
+        result = await counter.increment(user_id)
+
+        db_patch.get.assert_called_once_with(counter_patch, user_id=user_id)
+        counter_patch.assert_called_once_with(user_id=user_id, value=1)
+        db_patch.add.assert_called_once_with(counter_patch())
+        self.assertEqual({"old": None, "new": mock.value}, result)
+
+    @patch("daemon.endpoints.counter.db")
+    async def test__increment__found(self, db_patch: MagicMock):
+        user_id = MagicMock()
+        mock = MagicMock(value=42)
+        db_patch.get = AsyncMock(return_value=mock)
+
+        result = await counter.increment(user_id)
+
+        db_patch.get.assert_called_once_with(Counter, user_id=user_id)
+        self.assertEqual(43, mock.value)
+        self.assertEqual({"old": 42, "new": 43}, result)
