@@ -43,7 +43,7 @@ async def increment(user_id: str = get_user) -> dict:
     """
     Increment the counter value
 
-    :param user_id:  id of the user
+    :param user_id: id of the user
     :return: the old and the new counter value
     """
 
