@@ -97,3 +97,37 @@ class TestCounterEndpoints(IsolatedAsyncioTestCase):
         db_patch.get.assert_called_once_with(Counter, user_id=user_id)
         db_patch.delete.assert_called_once_with(mock)
         self.assertEqual({"ok": True}, result)
+
+    async def test__set__wrong_password(self):
+        with self.assertRaises(WrongPasswordException):
+            await counter.set_value("incorrect", ..., ...)
+
+    @patch("daemon.endpoints.counter.Counter")
+    @patch("daemon.endpoints.counter.db")
+    async def test__set__not_found(self, db_patch: MagicMock, counter_patch: MagicMock):
+        user_id = MagicMock()
+        mock = MagicMock()
+        value = MagicMock()
+        db_patch.get = AsyncMock(return_value=None)
+        db_patch.add = AsyncMock(return_value=mock)
+
+        result = await counter.set_value("S3cr3t", value, user_id)
+
+        db_patch.get.assert_called_once_with(counter_patch, user_id=user_id)
+        counter_patch.assert_called_once_with(user_id=user_id, value=value)
+        db_patch.add.assert_called_once_with(counter_patch())
+        self.assertEqual({"old": None, "new": mock.value}, result)
+
+    @patch("daemon.endpoints.counter.db")
+    async def test__set__found(self, db_patch: MagicMock):
+        user_id = MagicMock()
+        mock = MagicMock(value=42)
+        value = MagicMock()
+        old_value = mock.value
+        db_patch.get = AsyncMock(return_value=mock)
+
+        result = await counter.set_value("S3cr3t", value, user_id)
+
+        db_patch.get.assert_called_once_with(Counter, user_id=user_id)
+        self.assertEqual(value, mock.value)
+        self.assertEqual({"old": old_value, "new": value}, result)
