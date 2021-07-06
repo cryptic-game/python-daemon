@@ -1,6 +1,7 @@
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, MagicMock
 
+from daemon.endpoint_collection import get_user
 from daemon.endpoints import counter
 from daemon.exceptions.counter import CounterNotFoundException, WrongPasswordException
 from daemon.models.counter import Counter
@@ -10,11 +11,11 @@ from daemon.utils import responses
 from tests._utils import Endpoint, test_endpoint_collection, AsyncMock
 
 ENDPOINTS: list[Endpoint] = [
-    Endpoint("exception", "exception", {}),
-    Endpoint("get", "get", {"responses": responses(ValueResponse, CounterNotFoundException)}),
-    Endpoint("increment", "increment", {"responses": responses(ValueChangedResponse)}),
-    Endpoint("reset", "magic", {"responses": responses(OKResponse, CounterNotFoundException)}),
-    Endpoint("set", "set_value", {"responses": responses(ValueChangedResponse, WrongPasswordException)}),
+    Endpoint("exception", "exception", [], {}),
+    Endpoint("get", "get", [get_user], {"responses": responses(ValueResponse, CounterNotFoundException)}),
+    Endpoint("increment", "increment", [get_user], {"responses": responses(ValueChangedResponse)}),
+    Endpoint("reset", "magic", [get_user], {"responses": responses(OKResponse, CounterNotFoundException)}),
+    Endpoint("set", "set_value", [get_user], {"responses": responses(ValueChangedResponse, WrongPasswordException)}),
 ]
 
 

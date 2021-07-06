@@ -34,7 +34,7 @@ def run_module(module: str):
     runpy.run_module(module, {}, "__main__")
 
 
-Endpoint = namedtuple("Endpoint", ["name", "function_name", "kwargs"])
+Endpoint = namedtuple("Endpoint", ["name", "function_name", "defaults", "kwargs"])
 
 
 def test_endpoint_collection(
@@ -72,6 +72,7 @@ def test_endpoint_collection(
             self.assertEqual(getattr(module, expected_endpoint.function_name), actual_func)
             self.assertEqual((), actual_args)
             self.assertEqual(expected_endpoint.kwargs, actual_kwargs)
+            self.assertEqual(tuple(expected_endpoint.defaults), actual_func.__defaults__ or ())
 
             lines = list(map(str.strip, actual_func.__doc__.strip().splitlines()))
             self.assertRegex(lines.pop(), r"^:return: [^ ].*$")
