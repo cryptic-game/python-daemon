@@ -74,3 +74,26 @@ class TestCounterEndpoints(IsolatedAsyncioTestCase):
         db_patch.get.assert_called_once_with(Counter, user_id=user_id)
         self.assertEqual(43, mock.value)
         self.assertEqual({"old": 42, "new": 43}, result)
+
+    @patch("daemon.endpoints.counter.db")
+    async def test__reset__not_found(self, db_patch: MagicMock):
+        user_id = MagicMock()
+        db_patch.get = AsyncMock(return_value=None)
+
+        with self.assertRaises(CounterNotFoundException):
+            await counter.magic(user_id)
+
+        db_patch.get.assert_called_once_with(Counter, user_id=user_id)
+
+    @patch("daemon.endpoints.counter.db")
+    async def test__reset__successful(self, db_patch: MagicMock):
+        user_id = MagicMock()
+        mock = MagicMock()
+        db_patch.get = AsyncMock(return_value=mock)
+        db_patch.delete = AsyncMock()
+
+        result = await counter.magic(user_id)
+
+        db_patch.get.assert_called_once_with(Counter, user_id=user_id)
+        db_patch.delete.assert_called_once_with(mock)
+        self.assertEqual({"ok": True}, result)
