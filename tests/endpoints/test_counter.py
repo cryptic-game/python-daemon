@@ -1,5 +1,6 @@
 from unittest import IsolatedAsyncioTestCase
 
+from daemon.endpoints import counter
 from daemon.exceptions.counter import CounterNotFoundException, WrongPasswordException
 from daemon.schemas.counter import ValueResponse, ValueChangedResponse
 from daemon.schemas.ok import OKResponse
@@ -18,3 +19,7 @@ ENDPOINTS: list[Endpoint] = [
 class TestCounterEndpoints(IsolatedAsyncioTestCase):
     async def test__collection(self):
         test_endpoint_collection(self, "counter", ENDPOINTS, "test endpoints", test=True)
+
+    async def test__exception(self):
+        with self.assertRaises(ZeroDivisionError):
+            await counter.exception()
