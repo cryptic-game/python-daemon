@@ -1,6 +1,5 @@
 import re
 from collections import namedtuple
-from types import FunctionType
 from typing import Optional
 
 from fastapi import FastAPI, Depends, APIRouter, Body
@@ -75,16 +74,16 @@ class EndpointCollection(APIRouter):
                 return func
 
             # use the function name if no other name is provided
-            _name = name if isinstance(name, str) else func.__name__
+            _name = name or func.__name__
 
-            doc = "\n".join(line.strip() for line in func.__doc__.splitlines())
-            self._endpoints.append(Endpoint(_name, doc))
+            desc = "\n".join(map(str.strip, func.__doc__.strip().splitlines())).split("\n\n")[0].replace("\n", " ")
+            self._endpoints.append(Endpoint(_name, desc))
 
             func = format_docs(func)
             func = default_parameter(Body(...))(func)
             return self.post(f"/{_name}", name="[TEST] " * test + func.__name__, *args, **kwargs)(func)
 
-        return deco(name) if isinstance(name, FunctionType) else deco
+        return deco
 
     @property
     def name(self) -> str:
@@ -114,7 +113,7 @@ class EndpointCollection(APIRouter):
             "endpoints": [
                 {
                     "id": endpoint.name,
-                    "description": endpoint.description.strip().rpartition("\n\n")[0],
+                    "description": endpoint.description,
                     "disabled": False,
                 }
                 for endpoint in self._endpoints

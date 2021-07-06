@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from fastapi.params import Depends
 
 from daemon import endpoint_collection
+from tests._utils import mock_list, mock_dict
 
 
 class TestEndpointCollection(IsolatedAsyncioTestCase):
@@ -112,3 +113,80 @@ class TestEndpointCollection(IsolatedAsyncioTestCase):
                 self.assertEqual(test, result._test)
                 self.assertEqual(disabled or test and not debug, result._disabled)
                 self.assertEqual([], result._endpoints)
+
+    @patch("daemon.endpoint_collection.Body")
+    @patch("daemon.endpoint_collection.default_parameter")
+    @patch("daemon.endpoint_collection.format_docs")
+    async def test__endpoint(
+        self,
+        format_docs_patch: MagicMock,
+        default_parameter_patch: MagicMock,
+        body_patch: MagicMock,
+    ):
+        for disabled, collection_test, test, debug, name_from_func in itertools.product([False, True], repeat=5):
+            format_docs_patch.reset_mock()
+            default_parameter_patch.reset_mock()
+            body_patch.reset_mock()
+
+            with self.subTest(
+                disabled=disabled,
+                collection_test=collection_test,
+                test=test,
+                debug=debug,
+                name_from_func=name_from_func,
+            ):
+
+                collection = MagicMock(_test=collection_test)
+                name = MagicMock()
+                args = mock_list(5)
+                kwargs = mock_dict(5, True)
+                func = MagicMock()
+                func.__name__ = MagicMock()
+                func.__doc__ = """
+                foo bar baz
+                hello world
+
+                asdf
+                xyz
+
+                42 1337
+                """
+                func.__doc__ = func.__doc__.replace("\n\n", "\n    \n")
+                default_parameter_patch()().__name__ = str(MagicMock())
+                default_parameter_patch.reset_mock()
+                endpoint_collection.DEBUG = debug
+
+                result = endpoint_collection.EndpointCollection.endpoint(
+                    collection,
+                    None if name_from_func else name,
+                    *args,
+                    disabled=disabled,
+                    test=test,
+                    **kwargs,
+                )(func)
+
+                if disabled or (test or collection_test) and not debug:
+                    self.assertIs(result, func)
+                    collection._endpoints.append.assert_not_called()
+                    collection.post.assert_not_called()
+                    continue
+
+                if name_from_func:
+                    name = func.__name__
+
+                collection._endpoints.append.assert_called_once_with(
+                    endpoint_collection.Endpoint(name, "foo bar baz hello world"),
+                )
+
+                format_docs_patch.assert_called_once_with(func)
+                body_patch.assert_called_once_with(...)
+                default_parameter_patch.assert_called_once_with(body_patch())
+                default_parameter_patch().assert_called_once_with(format_docs_patch())
+                collection.post.assert_called_once_with(
+                    f"/{name}",
+                    name="[TEST] " * (test or collection_test) + default_parameter_patch()().__name__,
+                    *args,
+                    **kwargs,
+                )
+                collection.post().assert_called_once_with(default_parameter_patch()())
+                self.assertEqual(collection.post()(), result)
