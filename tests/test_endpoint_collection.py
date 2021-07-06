@@ -200,3 +200,32 @@ class TestEndpointCollection(IsolatedAsyncioTestCase):
         collection = MagicMock()
         # noinspection PyArgumentList
         self.assertEqual(collection._description, endpoint_collection.EndpointCollection.description.fget(collection))
+
+    async def test__register__disabled(self):
+        app = MagicMock()
+        collection = MagicMock(_disabled=True)
+
+        result = endpoint_collection.EndpointCollection.register(collection, app)
+
+        app.include_router.assert_not_called()
+        self.assertIs(result, None)
+
+    async def test__register__enabled(self):
+        app = MagicMock()
+        collection = MagicMock(_disabled=False, _endpoints=mock_list(5))
+
+        result = endpoint_collection.EndpointCollection.register(collection, app)
+
+        app.include_router.assert_called_once_with(collection)
+        self.assertEqual(
+            {
+                "id": collection.name,
+                "description": collection.description,
+                "disabled": False,
+                "endpoints": [
+                    {"id": endpoint.name, "description": endpoint.description, "disabled": False}
+                    for endpoint in collection._endpoints
+                ],
+            },
+            result,
+        )
