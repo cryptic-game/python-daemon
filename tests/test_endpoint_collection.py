@@ -190,3 +190,13 @@ class TestEndpointCollection(IsolatedAsyncioTestCase):
                 )
                 collection.post().assert_called_once_with(default_parameter_patch()())
                 self.assertEqual(collection.post()(), result)
+
+    async def test__name(self):
+        collection = MagicMock()
+        # noinspection PyArgumentList
+        self.assertEqual(collection._name, endpoint_collection.EndpointCollection.name.fget(collection))
+
+    async def test__description(self):
+        collection = MagicMock()
+        # noinspection PyArgumentList
+        self.assertEqual(collection._description, endpoint_collection.EndpointCollection.description.fget(collection))
