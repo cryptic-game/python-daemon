@@ -2,9 +2,13 @@ from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
 from daemon import endpoints
+from daemon.endpoints import counter_collection
 
 
 class TestEndpoints(TestCase):
+    def test__endpoint_collections(self):
+        self.assertEqual([counter_collection], endpoints.ENDPOINT_COLLECTIONS)
+
     @patch("daemon.endpoints.ENDPOINT_COLLECTIONS")
     def test__register_collections(self, endpoint_collections_patch):
         app = MagicMock()

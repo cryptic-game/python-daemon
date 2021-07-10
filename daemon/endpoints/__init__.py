@@ -1,10 +1,8 @@
 from fastapi import FastAPI
 
 from .counter import counter_collection
-from .device import device_collection
 
 ENDPOINT_COLLECTIONS = [
-    device_collection,
     counter_collection,
 ]
 

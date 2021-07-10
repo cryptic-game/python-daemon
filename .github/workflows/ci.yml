@@ -75,6 +75,7 @@ jobs:
       - name: Send coverage report to codeclimate
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        if: ${{ env.CC_TEST_REPORTER_ID != null }}
         run: |
           set -ex
 
