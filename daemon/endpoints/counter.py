@@ -11,7 +11,7 @@ from ..utils import responses
 counter_collection = EndpointCollection("counter", "test endpoints", test=True)
 
 
-@counter_collection.endpoint
+@counter_collection.endpoint()
 async def exception():
     """
     Raises an exception
