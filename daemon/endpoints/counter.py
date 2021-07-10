@@ -5,7 +5,7 @@ from ..endpoint_collection import EndpointCollection, get_user
 from ..exceptions.counter import CounterNotFoundException, WrongPasswordException
 from ..models.counter import Counter
 from ..schemas.counter import ValueResponse, ValueChangedResponse
-from ..schemas.ok import OKResponse
+from ..schemas.ok import OKResponse, ok_response
 from ..utils import responses
 
 counter_collection = EndpointCollection("counter", "test endpoints", test=True)
@@ -23,7 +23,7 @@ async def exception():
 
 
 @counter_collection.endpoint(responses=responses(ValueResponse, CounterNotFoundException))
-async def get(user_id: str = get_user) -> int:
+async def get(user_id: str = get_user) -> dict:
     """
     Fetch the current counter value
 
@@ -35,7 +35,7 @@ async def get(user_id: str = get_user) -> int:
     if counter is None:
         raise CounterNotFoundException
 
-    return counter.value
+    return {"value": counter.value}
 
 
 @counter_collection.endpoint(responses=responses(ValueChangedResponse))
@@ -43,7 +43,7 @@ async def increment(user_id: str = get_user) -> dict:
     """
     Increment the counter value
 
-    :param user_id:  id of the user
+    :param user_id: id of the user
     :return: the old and the new counter value
     """
 
@@ -58,7 +58,7 @@ async def increment(user_id: str = get_user) -> dict:
 
 
 @counter_collection.endpoint("reset", responses=responses(OKResponse, CounterNotFoundException))
-async def magic(user_id: str = get_user):
+async def magic(user_id: str = get_user) -> dict:
     """
     Reset the counter using magic
 
@@ -72,11 +72,11 @@ async def magic(user_id: str = get_user):
 
     await db.delete(counter)
 
-    return True
+    return ok_response
 
 
 @counter_collection.endpoint("set", responses=responses(ValueChangedResponse, WrongPasswordException))
-async def set_value(password: str, value: int, user_id: str = get_user):
+async def set_value(password: str, value: int, user_id: str = get_user) -> dict:
     """
     Set the counter to a specific value
 
