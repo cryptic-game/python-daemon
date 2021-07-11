@@ -1,5 +1,5 @@
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 
 from daemon import main
 from tests._utils import import_module, run_module
@@ -12,7 +12,7 @@ class TestMain(IsolatedAsyncioTestCase):
 
         main_ = import_module("daemon.main")
 
-        get_logger_patch.assert_has_calls([call("daemon.main"), call("uvicorn")], any_order=True)
+        get_logger_patch.assert_called_once_with("daemon.main")
         self.assertEqual(logger, main_.logger)
 
     @patch("sys.exit")
@@ -66,7 +66,6 @@ class TestMain(IsolatedAsyncioTestCase):
             host=host_patch,
             port=port_patch,
             reload=reload_patch,
-            log_config=None,
         )
 
     @patch("daemon.main.run_daemon")

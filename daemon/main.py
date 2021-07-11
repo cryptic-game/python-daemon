@@ -7,7 +7,6 @@ from .environment import SENTRY_DSN, API_TOKEN, DEBUG, HOST, PORT, RELOAD
 from .logger import get_logger, setup_sentry
 
 logger = get_logger(__name__)
-get_logger("uvicorn")
 
 
 def check_api_token():
@@ -26,7 +25,7 @@ def check_api_token():
 def run_daemon():
     """Run the uvicorn http server"""
 
-    uvicorn.run("daemon.daemon:app", host=HOST, port=PORT, reload=RELOAD, log_config=None)
+    uvicorn.run("daemon.daemon:app", host=HOST, port=PORT, reload=RELOAD)
 
 
 def main():

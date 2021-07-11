@@ -1,7 +1,10 @@
 import sys
-from logging import Formatter, PercentStyle, StreamHandler
+from logging import PercentStyle, StreamHandler
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, MagicMock
+
+from uvicorn.config import LOGGING_CONFIG
+from uvicorn.logging import DefaultFormatter
 
 from daemon import logger
 from tests._utils import mock_list
@@ -43,8 +46,13 @@ class TestLogger(IsolatedAsyncioTestCase):
         app.add_middleware.assert_called_once_with(sentryasgimiddleware_patch)
 
     async def test__logging_formatter(self):
-        self.assertIsInstance(logger.logging_formatter, Formatter)
-        self.assertEqual("[%(asctime)s] [%(levelname)s] %(message)s", logger.logging_formatter._fmt)
+        self.assertIsInstance(logger.logging_formatter, DefaultFormatter)
+        self.assertEqual("[%(asctime)s] %(levelprefix)s %(message)s", logger.logging_formatter._fmt)
+        self.assertEqual("[%(asctime)s] %(levelprefix)s %(message)s", LOGGING_CONFIG["formatters"]["default"]["fmt"])
+        self.assertEqual(
+            '[%(asctime)s] %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s',
+            LOGGING_CONFIG["formatters"]["access"]["fmt"],
+        )
         self.assertIsInstance(logger.logging_formatter._style, PercentStyle)
 
     async def test__logging_handler(self):
